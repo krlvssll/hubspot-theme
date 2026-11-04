@@ -9,11 +9,15 @@ This repository holds the **True Doors** HubSpot CMS theme, scaffolded under
 true-doors-theme/
 ├── theme.json          # Theme configuration (label, screenshot, settings)
 ├── templates/
-│   └── home.html        # Home page template
+│   ├── home.html         # Home page template
+│   └── projects.html      # Projects listing page template (HubDB-backed)
 ├── css/
 │   └── main.css          # Theme stylesheet
 └── js/
     └── main.js            # Theme JavaScript
+
+scripts/
+└── setup_hubdb.js        # One-time, idempotent HubDB table setup script
 ```
 
 ## Local development with the HubSpot CLI
@@ -47,3 +51,33 @@ Before the workflow will succeed, configure the following in this repository
 
 Once these are set, every push to `main` will automatically deploy
 `true-doors-theme/` to the configured HubSpot portal.
+
+## HubDB-backed Projects page
+
+The `true-doors-theme/templates/projects.html` template renders a list of
+projects from a HubDB table named `projects`, which is set up by
+[`scripts/setup_hubdb.js`](./scripts/setup_hubdb.js). That script is
+idempotent (it checks for an existing table by name before creating one) and
+sets up three related HubDB tables:
+
+| Table | Purpose | Columns |
+| --- | --- | --- |
+| `companies` | Companies associated with a project | `name` (TEXT), `website` (TEXT) |
+| `products` | Products that can be attached to a project | `name` (TEXT), `sku` (TEXT), `description` (TEXT) |
+| `projects` | The projects shown on the Projects page | `project_name` (TEXT), `location_name` (TEXT), `city` (TEXT), `region` (TEXT), `country` (TEXT), `status` (SELECT: "In Progress" / "Completed"), `start_date` (DATE), `description` (RICHTEXT), `company` (FOREIGN_ID -> `companies`), `products` (FOREIGN_ID -> `products`) |
+
+### Running the HubDB setup
+
+The setup script is wired up as a manual, one-time GitHub Actions workflow at
+[`.github/workflows/setup-hubdb.yml`](./.github/workflows/setup-hubdb.yml).
+Trigger it from the **Actions** tab (or `gh workflow run setup-hubdb.yml`). It
+reuses the same `hubspot_personal_access_key` secret and
+`hubspot_account_id`/`hubspot_portal_id` variable/secret as the deploy
+workflow. The Private App token needs the `hubdb` scope (and `content` if you
+also want to create pages via the API).
+
+You can also run it locally:
+
+```
+HUBSPOT_PAT=your-private-app-token node scripts/setup_hubdb.js
+```

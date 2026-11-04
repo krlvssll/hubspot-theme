@@ -1,0 +1,195 @@
+#!/usr/bin/env node
+/**
+ * One-time (idempotent) HubDB setup script.
+ *
+ * Creates the `companies`, `products`, and `projects` HubDB tables in a
+ * HubSpot portal if they do not already exist, wires up the FOREIGN_ID
+ * relations from `projects` to `companies`/`products`, and publishes each
+ * newly created table so it is immediately usable from HubL templates.
+ *
+ * Auth: reads a Private App access token from the HUBSPOT_PAT environment
+ * variable. The token value is never logged.
+ *
+ * Usage:
+ *   HUBSPOT_PAT=xxxx node scripts/setup_hubdb.js
+ */
+
+const API_BASE = "https://api.hubapi.com";
+
+function getToken() {
+  const token = process.env.HUBSPOT_PAT;
+  if (!token) {
+    console.error(
+      "Missing HUBSPOT_PAT environment variable. Set it to a HubSpot " +
+        "Private App access token with the `hubdb` scope before running " +
+        "this script."
+    );
+    process.exit(1);
+  }
+  return token;
+}
+
+async function hubspotRequest(token, method, path, body) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+  });
+
+  const text = await res.text();
+  let json;
+  try {
+    json = text ? JSON.parse(text) : {};
+  } catch (err) {
+    json = { raw: text };
+  }
+
+  if (!res.ok) {
+    const message = json && json.message ? json.message : text;
+    const category = json && json.category ? ` (category: ${json.category})` : "";
+    const err = new Error(
+      `HubSpot API ${method} ${path} failed: ${res.status} ${message}${category}`
+    );
+    err.status = res.status;
+    err.body = json;
+    throw err;
+  }
+
+  return json;
+}
+
+// Fetches all HubDB tables (published), following pagination.
+async function listAllTables(token) {
+  const tables = [];
+  let after;
+  do {
+    const query = after ? `?limit=100&after=${encodeURIComponent(after)}` : "?limit=100";
+    const page = await hubspotRequest(token, "GET", `/cms/v3/hubdb/tables${query}`);
+    tables.push(...(page.results || []));
+    after = page.paging && page.paging.next ? page.paging.next.after : undefined;
+  } while (after);
+  return tables;
+}
+
+async function findTableByName(token, name) {
+  const tables = await listAllTables(token);
+  return tables.find((t) => t.name === name);
+}
+
+async function createTable(token, definition) {
+  return hubspotRequest(token, "POST", "/cms/v3/hubdb/tables", definition);
+}
+
+async function publishTable(token, tableIdOrName) {
+  return hubspotRequest(
+    token,
+    "POST",
+    `/cms/v3/hubdb/tables/${tableIdOrName}/draft/push-live`
+  );
+}
+
+function textColumn(name, label) {
+  return { name, label: label || name, type: "TEXT" };
+}
+
+// Ensures a table exists, creating + publishing it if necessary.
+// Returns the (published) table object either way.
+async function ensureTable(token, definition) {
+  const existing = await findTableByName(token, definition.name);
+  if (existing) {
+    console.log(`Table "${definition.name}" already exists (id: ${existing.id}). Skipping creation.`);
+    return existing;
+  }
+
+  console.log(`Creating table "${definition.name}"...`);
+  const created = await createTable(token, definition);
+  await publishTable(token, created.id);
+  console.log(`Created and published table "${definition.name}" (id: ${created.id}).`);
+  return created;
+}
+
+function findColumnId(table, columnName) {
+  const column = (table.columns || []).find((c) => c.name === columnName);
+  if (!column) {
+    throw new Error(`Could not find column "${columnName}" on table "${table.name}" (id: ${table.id}).`);
+  }
+  return column.id;
+}
+
+async function main() {
+  const token = getToken();
+
+  const companiesTable = await ensureTable(token, {
+    name: "companies",
+    label: "Companies",
+    columns: [textColumn("name", "Name"), textColumn("website", "Website")],
+  });
+
+  const productsTable = await ensureTable(token, {
+    name: "products",
+    label: "Products",
+    columns: [
+      textColumn("name", "Name"),
+      textColumn("sku", "SKU"),
+      textColumn("description", "Description"),
+    ],
+  });
+
+  const companiesNameColumnId = findColumnId(companiesTable, "name");
+  const productsNameColumnId = findColumnId(productsTable, "name");
+
+  // Note: HubDB's FOREIGN_ID column always stores/returns a list of related
+  // rows at the API/HubL level. "Single-select" (company) vs "multi-select"
+  // (products) is a UX distinction enforced in the HubDB row editor UI; the
+  // template handles both the same way (a nested for-loop), which safely
+  // covers either zero, one, or many related rows.
+  const projectsTable = await ensureTable(token, {
+    name: "projects",
+    label: "Projects",
+    columns: [
+      textColumn("project_name", "Project Name"),
+      textColumn("location_name", "Location Name"),
+      textColumn("city", "City"),
+      textColumn("region", "Region"),
+      textColumn("country", "Country"),
+      {
+        name: "status",
+        label: "Status",
+        type: "SELECT",
+        options: [
+          { name: "In Progress", type: "option" },
+          { name: "Completed", type: "option" },
+        ],
+      },
+      { name: "start_date", label: "Start Date", type: "DATE" },
+      { name: "description", label: "Description", type: "RICHTEXT" },
+      {
+        name: "company",
+        label: "Company",
+        type: "FOREIGN_ID",
+        foreignTableId: companiesTable.id,
+        foreignColumnId: companiesNameColumnId,
+      },
+      {
+        name: "products",
+        label: "Products",
+        type: "FOREIGN_ID",
+        foreignTableId: productsTable.id,
+        foreignColumnId: productsNameColumnId,
+      },
+    ],
+  });
+
+  console.log("\nHubDB setup complete. Tables:");
+  console.log(`  companies -> id ${companiesTable.id}`);
+  console.log(`  products  -> id ${productsTable.id}`);
+  console.log(`  projects  -> id ${projectsTable.id}`);
+}
+
+main().catch((err) => {
+  console.error(err.message || err);
+  process.exit(1);
+});

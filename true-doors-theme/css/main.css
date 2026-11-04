@@ -1,1 +1,22 @@
 /* True Doors Theme - main stylesheet */
+
+.projects-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.project-card {
+  border: 1px solid #e2e2e2;
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+}
+
+.project-card h2 {
+  margin-top: 0;
+}
+
+.project-products ul {
+  margin: 0.25rem 0 0;
+  padding-left: 1.25rem;
+}

@@ -1,0 +1,22 @@
+name: Set up HubDB tables
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  setup-hubdb:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run HubDB setup script
+        env:
+          HUBSPOT_PAT: ${{ secrets.hubspot_personal_access_key }}
+          HUBSPOT_PORTAL_ID: ${{ vars.hubspot_account_id || secrets.hubspot_portal_id }}
+        run: node scripts/setup_hubdb.js
