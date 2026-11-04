@@ -187,6 +187,53 @@ async function main() {
   console.log(`  companies -> id ${companiesTable.id}`);
   console.log(`  products  -> id ${productsTable.id}`);
   console.log(`  projects  -> id ${projectsTable.id}`);
+
+  await ensureProjectsPage(token);
+}
+
+// Finds an existing site page by slug, using the Pages API (requires the
+// `content` scope). Returns the page object, or undefined if none is found.
+async function findPageBySlug(token, slug) {
+  const page = await hubspotRequest(
+    token,
+    "GET",
+    `/cms/v3/pages/site-pages?slug=${encodeURIComponent(slug)}&limit=10`
+  );
+  return (page.results || []).find((p) => p.slug === slug);
+}
+
+// Creates (or reuses) a live "Projects" page built from the projects.html
+// template. This step needs the `content` scope in addition to `hubdb`; if
+// that scope is missing, the failure is logged clearly but does not fail the
+// whole script, since the HubDB tables above are the more critical piece.
+async function ensureProjectsPage(token) {
+  const slug = "projects";
+  try {
+    const existing = await findPageBySlug(token, slug);
+    if (existing) {
+      console.log(`\nPage with slug "${slug}" already exists (id: ${existing.id}, url: ${existing.url}). Skipping creation.`);
+      return;
+    }
+
+    const created = await hubspotRequest(token, "POST", "/cms/v3/pages/site-pages", {
+      name: "Projects",
+      slug,
+      templatePath: "true-doors-theme/templates/projects.html",
+      subcategory: "site_page",
+      state: "PUBLISHED",
+    });
+    console.log(`\nCreated and published "Projects" page (id: ${created.id}, url: ${created.url}).`);
+  } catch (err) {
+    if (err.status === 403) {
+      console.error(
+        "\nSkipped Projects page creation: the Private App token is missing " +
+          "the `content` scope required by the CMS Pages API (403 error). " +
+          `Details: ${err.message}`
+      );
+      return;
+    }
+    console.error(`\nSkipped Projects page creation due to an error: ${err.message}`);
+  }
 }
 
 main().catch((err) => {
