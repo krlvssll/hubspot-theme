@@ -71,10 +71,13 @@ sets up three related HubDB tables:
 The setup script is wired up as a manual, one-time GitHub Actions workflow at
 [`.github/workflows/setup-hubdb.yml`](./.github/workflows/setup-hubdb.yml).
 Trigger it from the **Actions** tab (or `gh workflow run setup-hubdb.yml`). It
-reuses the same `hubspot_personal_access_key` secret and
+uses a dedicated repository secret, `hubspot_private_app_token` (a HubSpot
+Private App access token with the `hubdb` scope, plus `content` if you also
+want to create pages via the API) — this is separate from
+`hubspot_personal_access_key`, which remains used only for the CLI theme
+deploy workflow. It also reads the portal ID from the same
 `hubspot_account_id`/`hubspot_portal_id` variable/secret as the deploy
-workflow. The Private App token needs the `hubdb` scope (and `content` if you
-also want to create pages via the API).
+workflow.
 
 You can also run it locally:
 

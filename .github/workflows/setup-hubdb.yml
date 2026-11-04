@@ -17,6 +17,6 @@ jobs:
 
       - name: Run HubDB setup script
         env:
-          HUBSPOT_PAT: ${{ secrets.hubspot_personal_access_key }}
+          HUBSPOT_PAT: ${{ secrets.hubspot_private_app_token }}
           HUBSPOT_PORTAL_ID: ${{ vars.hubspot_account_id || secrets.hubspot_portal_id }}
         run: node scripts/setup_hubdb.js
