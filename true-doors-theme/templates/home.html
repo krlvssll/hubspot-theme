@@ -1,0 +1,23 @@
+<!--
+templateType: page
+isAvailableForNewContent: true
+label: Home
+-->
+<!doctype html>
+<html>
+<head>
+  {{ standard_header_includes }}
+  <title>{{ page_meta.html_title }}</title>
+  <link rel="stylesheet" href="{{ get_asset_url('../css/main.css') }}">
+</head>
+<body class="{{ body_classes }}">
+  <header>
+    <h1>True Doors</h1>
+  </header>
+  <main>
+    {{ content.post_body }}
+  </main>
+  <script src="{{ get_asset_url('../js/main.js') }}"></script>
+  {{ standard_footer_includes }}
+</body>
+</html>

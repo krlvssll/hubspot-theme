@@ -1,0 +1,1 @@
+// True Doors Theme - main JavaScript entry point
