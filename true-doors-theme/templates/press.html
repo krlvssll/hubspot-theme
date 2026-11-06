@@ -26,18 +26,6 @@ label: Press
   Assumes `active` and `notable` are HubDB SELECT columns with "Yes"/"No"
   options (not BOOLEAN); adjust the query strings below if that's not the
   case in your portal.
-
-  Design parity with the rest of the site: truedoors.com's real pages are
-  built on a licensed marketplace theme ("BASE" by SmartAcre, visible in
-  Design Manager as "Theme: BASE"), not this repo's theme — Design Manager
-  source for marketplace themes can't be copied into our own theme files.
-  To avoid a visually inconsistent, unstyled page, this template pulls in
-  BASE's actual global header/footer via the HubL `global_partial` tag
-  (referencing BASE's partials directly, not a copy) and reuses BASE's
-  grid/container markup conventions (`container-fluid`/`row-fluid`/
-  `span12`) so Press sits inside the same page chrome as every other page
-  on the site. Our own `../css/main.css` only supplies Press-specific
-  layout (card grid, filter form, pagination) on top of that.
 #}
 {% set press_base_path = "/press" %}
 <!doctype html>
@@ -48,16 +36,13 @@ label: Press
   <link rel="stylesheet" href="{{ get_asset_url('../css/main.css') }}">
 </head>
 <body class="{{ body_classes }}">
-  <a class="base-skip-to-content base_visually-hidden-focusable hs-button" href="#main-content">Skip to main content</a>
-  {% global_partial path="@marketplace/SmartAcre_Inc_/BASE/templates/partials/header.html" %}
   {% if dynamic_page_hubdb_row %}
     {% set row = dynamic_page_hubdb_row %}
-    <main id="main-content">
-      <div class="container-fluid">
-      <header>
-        <a class="press-back-link" href="{{ press_base_path }}">&larr; Back to Press</a>
-        <h1>{{ row.title }}</h1>
-      </header>
+    <header>
+      <a class="press-back-link" href="{{ press_base_path }}">&larr; Back to Press</a>
+      <h1>{{ row.title }}</h1>
+    </header>
+    <main>
       <article class="press-detail">
         <p class="press-meta">
           {% if row.organisation %}<span class="press-org">{{ row.organisation }}</span>{% endif %}
@@ -83,7 +68,6 @@ label: Press
           </p>
         {% endif %}
       </article>
-      </div>
     </main>
   {% else %}
     {% set page_size = 12 %}
@@ -120,11 +104,10 @@ label: Press
 
     {% set notable_rows = hubdb_table_rows("press", "active=Yes&notable=Yes&orderBy=-date_published&limit=3") %}
 
-    <main id="main-content">
-      <div class="container-fluid">
-      <header>
-        <h1>Press</h1>
-      </header>
+    <header>
+      <h1>Press</h1>
+    </header>
+    <main>
       {% if notable_rows|length > 0 %}
         <section class="press-notable">
           <h2>Notable press</h2>
@@ -194,12 +177,9 @@ label: Press
           {% endif %}
         </nav>
       {% endif %}
-      </div>
     </main>
   {% endif %}
-  {% global_partial path="@marketplace/SmartAcre_Inc_/BASE/templates/partials/footer.html" %}
   <script src="{{ get_asset_url('../js/main.js') }}"></script>
   {{ standard_footer_includes }}
 </body>
 </html>
-
