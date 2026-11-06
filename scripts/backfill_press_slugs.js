@@ -1,14 +1,22 @@
 #!/usr/bin/env node
 /**
- * One-time (idempotent) backfill for the `press` HubDB table.
+ * One-time (idempotent) setup for the `press` HubDB table as a dynamic-page
+ * data source.
  *
  * The `press` table (created and populated outside of this repo) holds press
- * mentions, but its rows were imported without a row `path`/`name`. HubDB
- * requires a unique `path` per row to serve the table as a "dynamic page"
- * (one detail URL per row). This script assigns a slug (derived from
- * `title`, falling back to `press-mention-<hs_id>` when the title is blank
- * or would produce a duplicate slug) to every row missing one, then
- * publishes the table.
+ * mentions, but its rows were imported without a row `path`/`name`, and the
+ * table itself was not yet enabled for dynamic pages. This script:
+ *
+ *   1. Sets `useForPages: true` on the table (if not already set), which
+ *      makes it selectable as a dynamic-page data source in HubSpot's
+ *      content editor (Content > Pages > Advanced Options). Actually
+ *      binding a page to the table and publishing it is a content-editor
+ *      step this script does not perform.
+ *   2. Assigns a slug (derived from `title`, falling back to
+ *      `press-mention-<hs_id>` when the title is blank or would produce a
+ *      duplicate slug) to every row missing a `path`, since HubDB requires
+ *      a unique path per row to generate per-row detail URLs.
+ *   3. Publishes the table if either of the above changed anything.
  *
  * Auth: reads a Private App access token from the HUBSPOT_PAT environment
  * variable (same token used by scripts/setup_hubdb.js). The token value is
@@ -137,6 +145,21 @@ async function main() {
     process.exit(1);
   }
 
+  let needsPublish = false;
+
+  // `useForPages` makes the table selectable as a dynamic-page data source
+  // in the content editor (Content > Pages > Advanced Options). This is
+  // idempotent: it only PATCHes when the flag isn't already set.
+  if (!table.useForPages) {
+    console.log(`Enabling "useForPages" on "${TABLE_NAME}" (table id: ${table.id})...`);
+    await hubspotRequest(token, "PATCH", `/cms/v3/hubdb/tables/${table.id}/draft`, {
+      useForPages: true,
+    });
+    needsPublish = true;
+  } else {
+    console.log(`"useForPages" is already enabled on "${TABLE_NAME}".`);
+  }
+
   const rows = await listAllDraftRows(token, table.id);
   console.log(`Found ${rows.length} rows in "${TABLE_NAME}" (table id: ${table.id}).`);
 
@@ -148,27 +171,33 @@ async function main() {
 
   const rowsNeedingSlugs = rows.filter((r) => !r.path);
   if (rowsNeedingSlugs.length === 0) {
-    console.log("Every row already has a path. Nothing to do.");
+    console.log("Every row already has a path.");
+  } else {
+    console.log(`Backfilling ${rowsNeedingSlugs.length} row(s) missing a path...`);
+
+    let updated = 0;
+    for (const row of rowsNeedingSlugs) {
+      const slug = buildUniqueSlug(row, usedSlugs);
+      usedSlugs.add(slug);
+
+      const name = (row.values && row.values.title) || slug;
+
+      await hubspotRequest(token, "PATCH", `/cms/v3/hubdb/tables/${table.id}/rows/${row.id}/draft`, {
+        path: slug,
+        name,
+      });
+      updated += 1;
+    }
+    console.log(`Updated ${updated} row(s).`);
+    needsPublish = true;
+  }
+
+  if (!needsPublish) {
+    console.log("Nothing changed. Skipping publish.");
     return;
   }
 
-  console.log(`Backfilling ${rowsNeedingSlugs.length} row(s) missing a path...`);
-
-  let updated = 0;
-  for (const row of rowsNeedingSlugs) {
-    const slug = buildUniqueSlug(row, usedSlugs);
-    usedSlugs.add(slug);
-
-    const name = (row.values && row.values.title) || slug;
-
-    await hubspotRequest(token, "PATCH", `/cms/v3/hubdb/tables/${table.id}/rows/${row.id}/draft`, {
-      path: slug,
-      name,
-    });
-    updated += 1;
-  }
-
-  console.log(`Updated ${updated} row(s). Publishing table...`);
+  console.log("Publishing table...");
   await hubspotRequest(token, "POST", `/cms/v3/hubdb/tables/${table.id}/draft/push-live`);
   console.log(`Published "${TABLE_NAME}" (table id: ${table.id}).`);
 }

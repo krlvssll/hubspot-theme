@@ -115,11 +115,16 @@ template's `active=true`/`notable=true` HubL queries to work.
 
 ### One-time setup
 
-1. **Backfill row slugs.** HubDB dynamic pages need a unique `path` per row
-   for detail URLs; existing `press` rows were imported without one. The
-   script is idempotent — it only fills in rows missing a path, slugified
-   from `title` (falling back to `press-mention-<hs_id>` for blank/duplicate
-   titles), then publishes the table. Run it either:
+1. **Run the setup script.** It's idempotent and handles two things:
+   - Enables `useForPages` on the `press` table (if not already set), so it
+     can be selected as a dynamic-page data source in the content editor.
+   - Backfills a unique `path`/`name` on any row missing one (existing rows
+     were imported without these), slugified from `title` (falling back to
+     `press-mention-<hs_id>` for blank/duplicate titles) — required for
+     per-row detail URLs.
+   - Publishes the table if either of the above changed anything.
+
+   Run it either:
    - From the **Actions** tab: trigger
      [`.github/workflows/backfill-press-slugs.yml`](./.github/workflows/backfill-press-slugs.yml)
      (uses the same `hubspot_private_app_token` secret as the HubDB setup
@@ -130,12 +135,14 @@ template's `active=true`/`notable=true` HubL queries to work.
      HUBSPOT_PAT=your-private-app-token node scripts/backfill_press_slugs.js
      ```
 
-2. **Create and bind the page.** This is a content-tool setting, not
-   something expressible in the theme files:
+2. **Create and bind the page.** Requires Content Hub Professional or
+   Enterprise, and is a content-editor action, not something expressible in
+   the theme files or automatable via the API:
    - In HubSpot: **Content > Pages > Create > Website Page**, choose the
      `true-doors-theme/templates/press.html` template.
    - Under the page's **Advanced Options**, enable **"Make this an HubDB
-     dynamic page"** and select the `press` table.
+     dynamic page"** and select the `press` table (now selectable, since
+     `useForPages` was enabled in step 1).
    - Publish the page at the path `/press` (the template assumes this path
      via its `press_base_path` variable — update that variable if you
      publish it elsewhere).
