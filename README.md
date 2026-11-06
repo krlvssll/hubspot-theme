@@ -116,15 +116,19 @@ template's `active=true`/`notable=true` HubL queries to work.
 ### One-time setup
 
 1. **Backfill row slugs.** HubDB dynamic pages need a unique `path` per row
-   for detail URLs; existing `press` rows were imported without one. Run:
+   for detail URLs; existing `press` rows were imported without one. The
+   script is idempotent — it only fills in rows missing a path, slugified
+   from `title` (falling back to `press-mention-<hs_id>` for blank/duplicate
+   titles), then publishes the table. Run it either:
+   - From the **Actions** tab: trigger
+     [`.github/workflows/backfill-press-slugs.yml`](./.github/workflows/backfill-press-slugs.yml)
+     (uses the same `hubspot_private_app_token` secret as the HubDB setup
+     workflow — no local setup needed), or
+   - Locally:
 
-   ```
-   HUBSPOT_PAT=your-private-app-token node scripts/backfill_press_slugs.js
-   ```
-
-   This is idempotent — it only fills in rows missing a path, slugified from
-   `title` (falling back to `press-mention-<hs_id>` for blank/duplicate
-   titles), then publishes the table.
+     ```
+     HUBSPOT_PAT=your-private-app-token node scripts/backfill_press_slugs.js
+     ```
 
 2. **Create and bind the page.** This is a content-tool setting, not
    something expressible in the theme files:
