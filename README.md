@@ -10,14 +10,16 @@ true-doors-theme/
 ├── theme.json          # Theme configuration (label, screenshot, settings)
 ├── templates/
 │   ├── home.html         # Home page template
-│   └── projects.html      # Projects listing page template (HubDB-backed)
+│   ├── projects.html      # Projects listing page template (HubDB-backed)
+│   └── press.html         # Press listing + detail dynamic page template (HubDB-backed)
 ├── css/
 │   └── main.css          # Theme stylesheet
 └── js/
     └── main.js            # Theme JavaScript
 
 scripts/
-└── setup_hubdb.js        # One-time, idempotent HubDB table setup script
+├── setup_hubdb.js             # One-time, idempotent HubDB table setup script
+└── backfill_press_slugs.js    # One-time, idempotent `press` row slug backfill script
 ```
 
 ## Local development with the HubSpot CLI
@@ -84,3 +86,56 @@ You can also run it locally:
 ```
 HUBSPOT_PAT=your-private-app-token node scripts/setup_hubdb.js
 ```
+
+## HubDB-backed Press pages (listing + detail)
+
+The `true-doors-theme/templates/press.html` template is a single HubL
+template that serves both a filterable, paginated **listing** page and, when
+bound as a HubDB dynamic page, a per-row **detail** page, from an existing
+`press` HubDB table (created/populated outside of this repo — it is not
+managed by `scripts/setup_hubdb.js`).
+
+Expected `press` table columns:
+
+| Column | Type | Purpose |
+| --- | --- | --- |
+| `title` | TEXT | Row title. Rows with a blank title are excluded from the listing. |
+| `date_published` | DATE | Used to sort newest-first. |
+| `country` | TEXT | Shown on the detail page. |
+| `continent` | TEXT | Shown on the detail page; also a listing filter facet. |
+| `organisation` | TEXT | Publication/outlet name. |
+| `rating` | SELECT | Internal quality flag; not shown publicly. |
+| `type` | SELECT | Mention type (Article, Video, etc.); a listing filter facet. |
+| `notable` | BOOLEAN | Featured in the "Notable press" strip at the top of the listing. |
+| `source` | TEXT (URL) | External link to the original article — there is no on-site body. |
+| `active` | BOOLEAN | Master publish flag; only `active=true` rows are listed. |
+
+`active` and `notable` must be real HubDB **BOOLEAN** columns for the
+template's `active=true`/`notable=true` HubL queries to work.
+
+### One-time setup
+
+1. **Backfill row slugs.** HubDB dynamic pages need a unique `path` per row
+   for detail URLs; existing `press` rows were imported without one. The
+   script is idempotent — it only fills in rows missing a path, slugified
+   from `title` (falling back to `press-mention-<hs_id>` for blank/duplicate
+   titles), then publishes the table. Run it either:
+   - From the **Actions** tab: trigger
+     [`.github/workflows/backfill-press-slugs.yml`](./.github/workflows/backfill-press-slugs.yml)
+     (uses the same `hubspot_private_app_token` secret as the HubDB setup
+     workflow — no local setup needed), or
+   - Locally:
+
+     ```
+     HUBSPOT_PAT=your-private-app-token node scripts/backfill_press_slugs.js
+     ```
+
+2. **Create and bind the page.** This is a content-tool setting, not
+   something expressible in the theme files:
+   - In HubSpot: **Content > Pages > Create > Website Page**, choose the
+     `true-doors-theme/templates/press.html` template.
+   - Under the page's **Advanced Options**, enable **"Make this an HubDB
+     dynamic page"** and select the `press` table.
+   - Publish the page at the path `/press` (the template assumes this path
+     via its `press_base_path` variable — update that variable if you
+     publish it elsewhere).

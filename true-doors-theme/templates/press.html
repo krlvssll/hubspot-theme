@@ -1,0 +1,184 @@
+<!--
+templateType: page
+isAvailableForNewContent: true
+label: Press
+-->
+{#
+  Press — HubDB dynamic page template.
+
+  This single template serves two views, both backed by the `press` HubDB
+  table:
+    - Listing view (default): a filterable, paginated list of press
+      mentions, each linking out to the mention's on-site detail page.
+    - Detail view: rendered automatically by HubSpot whenever this page is
+      configured as a HubDB dynamic page for the `press` table and the
+      request matches a row's `path` (exposed here as `dynamic_page_hubdb_row`).
+
+  Setup required outside of this repo (HubDB dynamic pages are a content-tool
+  setting, not something a theme file can express on its own):
+    1. Run scripts/backfill_press_slugs.js once so every `press` row has a
+       unique path (required for per-row detail URLs).
+    2. In HubSpot: Content > Pages > create a page using this template, then
+       under Advanced Options enable "Make this an HubDB dynamic page" and
+       select the `press` table. Publish the page at the path referenced by
+       `press_base_path` below (defaults to "/press").
+
+  Assumes `active` and `notable` are HubDB BOOLEAN columns (not TEXT
+  "Yes"/"No"); adjust the query strings below if that's not the case.
+#}
+{% set press_base_path = "/press" %}
+<!doctype html>
+<html>
+<head>
+  {{ standard_header_includes }}
+  <title>{{ page_meta.html_title }}</title>
+  <link rel="stylesheet" href="{{ get_asset_url('../css/main.css') }}">
+</head>
+<body class="{{ body_classes }}">
+  {% if dynamic_page_hubdb_row %}
+    {% set row = dynamic_page_hubdb_row %}
+    <header>
+      <a class="press-back-link" href="{{ press_base_path }}">&larr; Back to Press</a>
+      <h1>{{ row.title }}</h1>
+    </header>
+    <main>
+      <article class="press-detail">
+        <p class="press-meta">
+          {% if row.organisation %}<span class="press-org">{{ row.organisation }}</span>{% endif %}
+          {% if row.date_published %}
+            <span class="press-date">{{ row.date_published|datetimeformat("%B %-d, %Y") }}</span>
+          {% endif %}
+          {% if row.type %}<span class="press-type-badge">{{ row.type }}</span>{% endif %}
+        </p>
+
+        {% if row.country or row.continent %}
+          <p class="press-location">
+            {% if row.country %}{{ row.country }}{% endif %}
+            {% if row.country and row.continent %} &middot; {% endif %}
+            {% if row.continent %}{{ row.continent }}{% endif %}
+          </p>
+        {% endif %}
+
+        {% if row.source %}
+          <p class="press-cta">
+            <a class="press-read-original" href="{{ row.source }}" target="_blank" rel="noopener noreferrer">
+              Read the original article &#8599;
+            </a>
+          </p>
+        {% endif %}
+      </article>
+    </main>
+  {% else %}
+    {% set page_size = 12 %}
+    {% set page_num = request.query_dict.page|default(1)|int %}
+    {% if page_num < 1 %}{% set page_num = 1 %}{% endif %}
+
+    {% set selected_type = request.query_dict.type|default("") %}
+    {% set selected_continent = request.query_dict.continent|default("") %}
+
+    {#
+      Fixed facet option lists mirroring the current `type`/`continent`
+      SELECT options in the `press` HubDB table. Update these if the
+      options in HubDB change.
+    #}
+    {% set type_options = ["Article", "Editorial", "Infographic", "Leaflet", "Mention", "Print", "Radio", "Report", "TV", "Video", "YouTube"] %}
+    {% set continent_options = ["Africa", "Asia", "Europe", "North America", "Oceania", "South America", "Worldwide"] %}
+
+    {% set all_rows = hubdb_table_rows("press", "active=true&orderBy=-date_published&limit=1000") %}
+
+    {% set ns = namespace(filtered=[]) %}
+    {% for row in all_rows %}
+      {% if row.title
+        and (selected_type == "" or row.type == selected_type)
+        and (selected_continent == "" or row.continent == selected_continent) %}
+        {% set ns.filtered = ns.filtered + [row] %}
+      {% endif %}
+    {% endfor %}
+
+    {% set total_rows = ns.filtered|length %}
+    {% set total_pages = ((total_rows - 1) // page_size) + 1 if total_rows > 0 else 1 %}
+    {% set start = (page_num - 1) * page_size %}
+    {% set end = start + page_size %}
+    {% set page_rows = ns.filtered[start:end] %}
+
+    {% set notable_rows = hubdb_table_rows("press", "active=true&notable=true&orderBy=-date_published&limit=3") %}
+
+    <header>
+      <h1>Press</h1>
+    </header>
+    <main>
+      {% if notable_rows|length > 0 %}
+        <section class="press-notable">
+          <h2>Notable press</h2>
+          <div class="press-notable-list">
+            {% for row in notable_rows %}
+              <a class="press-notable-card" href="{{ press_base_path }}/{{ row.hs_path }}">
+                <span class="press-org">{{ row.organisation }}</span>
+                <span class="press-title">{{ row.title }}</span>
+              </a>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+
+      <form class="press-filters" method="get" action="{{ press_base_path }}">
+        <label>
+          Type
+          <select name="type" onchange="this.form.submit()">
+            <option value="">All types</option>
+            {% for option in type_options %}
+              <option value="{{ option }}" {% if option == selected_type %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>
+          Continent
+          <select name="continent" onchange="this.form.submit()">
+            <option value="">All continents</option>
+            {% for option in continent_options %}
+              <option value="{{ option }}" {% if option == selected_continent %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <noscript><button type="submit">Filter</button></noscript>
+        {% if selected_type or selected_continent %}
+          <a class="press-filters-clear" href="{{ press_base_path }}">Clear filters</a>
+        {% endif %}
+      </form>
+
+      <div class="press-list">
+        {% for row in page_rows %}
+          <article class="press-card">
+            <a class="press-card-link" href="{{ press_base_path }}/{{ row.hs_path }}">
+              <h2>{{ row.title }}</h2>
+              <p class="press-meta">
+                {% if row.organisation %}<span class="press-org">{{ row.organisation }}</span>{% endif %}
+                {% if row.date_published %}
+                  <span class="press-date">{{ row.date_published|datetimeformat("%B %-d, %Y") }}</span>
+                {% endif %}
+                {% if row.type %}<span class="press-type-badge">{{ row.type }}</span>{% endif %}
+              </p>
+            </a>
+          </article>
+        {% else %}
+          <p>No press mentions found.</p>
+        {% endfor %}
+      </div>
+
+      {% if total_pages > 1 %}
+        <nav class="press-pagination">
+          {% if page_num > 1 %}
+            <a href="{{ press_base_path }}?page={{ page_num - 1 }}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_continent %}&continent={{ selected_continent }}{% endif %}">&larr; Previous</a>
+          {% endif %}
+          <span class="press-pagination-status">Page {{ page_num }} of {{ total_pages }}</span>
+          {% if page_num < total_pages %}
+            <a href="{{ press_base_path }}?page={{ page_num + 1 }}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_continent %}&continent={{ selected_continent }}{% endif %}">Next &rarr;</a>
+          {% endif %}
+        </nav>
+      {% endif %}
+    </main>
+  {% endif %}
+  <script src="{{ get_asset_url('../js/main.js') }}"></script>
+  {{ standard_footer_includes }}
+</body>
+</html>
