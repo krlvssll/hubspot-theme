@@ -1,0 +1,21 @@
+name: Fix press page template binding
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  fix-press-page-template:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run fix script
+        env:
+          HUBSPOT_PAT: ${{ secrets.hubspot_private_app_token }}
+        run: node scripts/fix_press_page_template.js
