@@ -18,8 +18,9 @@ true-doors-theme/
     └── main.js            # Theme JavaScript
 
 scripts/
-├── setup_hubdb.js             # One-time, idempotent HubDB table setup script
-└── backfill_press_slugs.js    # One-time, idempotent `press` row slug backfill script
+├── setup_hubdb.js              # One-time, idempotent HubDB table setup script
+├── backfill_press_slugs.js     # One-time, idempotent `press` row slug backfill script
+└── fix_press_page_template.js  # One-time, idempotent fix for the live `/press` page's templatePath
 ```
 
 ## Local development with the HubSpot CLI
@@ -137,14 +138,28 @@ columns instead, change those query strings to `active=true`/`notable=true`.
      HUBSPOT_PAT=your-private-app-token node scripts/backfill_press_slugs.js
      ```
 
-2. **Create and bind the page.** Requires Content Hub Professional or
-   Enterprise, and is a content-editor action, not something expressible in
-   the theme files or automatable via the API:
-   - In HubSpot: **Content > Pages > Create > Website Page**, choose the
-     `true-doors-theme/templates/press.html` template.
-   - Under the page's **Advanced Options**, enable **"Make this an HubDB
-     dynamic page"** and select the `press` table (now selectable, since
-     `useForPages` was enabled in step 1).
-   - Publish the page at the path `/press` (the template assumes this path
-     via its `press_base_path` variable — update that variable if you
-     publish it elsewhere).
+2. **Bind the live page to the template.** `/press` already exists as a
+   HubDB dynamic page bound to the `press` table in this portal — it just
+   needs its `templatePath` pointed at `press.html` instead of whatever
+   placeholder template it was created from. Run (idempotent; no-ops if
+   already correct):
+   - From the **Actions** tab: trigger
+     [`.github/workflows/fix-press-page-template.yml`](./.github/workflows/fix-press-page-template.yml), or
+   - Locally:
+
+     ```
+     HUBSPOT_PAT=your-private-app-token node scripts/fix_press_page_template.js
+     ```
+
+   If HubSpot's "Select a template" picker in Design Manager doesn't
+   surface `press.html` by name (seen in this portal even in the correct
+   theme), this script bypasses the picker entirely via the CMS Pages API.
+   After running it, allow a minute or two for HubSpot's prerendered-page
+   cache to refresh before checking the live URL.
+
+   For a brand-new page instead of rebinding an existing one: **Content >
+   Pages > Create > Website Page**, choose the `true-doors-theme/templates/press.html`
+   template, enable **"Make this an HubDB dynamic page"** under Advanced
+   Options, select the `press` table (selectable since `useForPages` was
+   enabled in step 1), and publish at `/press` (or update the template's
+   `press_base_path` variable to match a different path).
