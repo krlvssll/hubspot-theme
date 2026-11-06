@@ -23,8 +23,9 @@ label: Press
        select the `press` table. Publish the page at the path referenced by
        `press_base_path` below (defaults to "/press").
 
-  Assumes `active` and `notable` are HubDB BOOLEAN columns (not TEXT
-  "Yes"/"No"); adjust the query strings below if that's not the case.
+  Assumes `active` and `notable` are HubDB SELECT columns with "Yes"/"No"
+  options (not BOOLEAN); adjust the query strings below if that's not the
+  case in your portal.
 #}
 {% set press_base_path = "/press" %}
 <!doctype html>
@@ -84,7 +85,7 @@ label: Press
     {% set type_options = ["Article", "Editorial", "Infographic", "Leaflet", "Mention", "Print", "Radio", "Report", "TV", "Video", "YouTube"] %}
     {% set continent_options = ["Africa", "Asia", "Europe", "North America", "Oceania", "South America", "Worldwide"] %}
 
-    {% set all_rows = hubdb_table_rows("press", "active=true&orderBy=-date_published&limit=1000") %}
+    {% set all_rows = hubdb_table_rows("press", "active=Yes&orderBy=-date_published&limit=1000") %}
 
     {% set ns = namespace(filtered=[]) %}
     {% for row in all_rows %}
@@ -101,7 +102,7 @@ label: Press
     {% set end = start + page_size %}
     {% set page_rows = ns.filtered[start:end] %}
 
-    {% set notable_rows = hubdb_table_rows("press", "active=true&notable=true&orderBy=-date_published&limit=3") %}
+    {% set notable_rows = hubdb_table_rows("press", "active=Yes&notable=Yes&orderBy=-date_published&limit=3") %}
 
     <header>
       <h1>Press</h1>

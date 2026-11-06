@@ -106,12 +106,14 @@ Expected `press` table columns:
 | `organisation` | TEXT | Publication/outlet name. |
 | `rating` | SELECT | Internal quality flag; not shown publicly. |
 | `type` | SELECT | Mention type (Article, Video, etc.); a listing filter facet. |
-| `notable` | BOOLEAN | Featured in the "Notable press" strip at the top of the listing. |
+| `notable` | SELECT (Yes/No) | Featured in the "Notable press" strip at the top of the listing. |
 | `source` | TEXT (URL) | External link to the original article — there is no on-site body. |
-| `active` | BOOLEAN | Master publish flag; only `active=true` rows are listed. |
+| `active` | SELECT (Yes/No) | Master publish flag; only `active=Yes` rows are listed. |
 
-`active` and `notable` must be real HubDB **BOOLEAN** columns for the
-template's `active=true`/`notable=true` HubL queries to work.
+`active` and `notable` are HubDB **SELECT** columns with `Yes`/`No` options
+in this portal (not BOOLEAN) — the template's HubL queries filter on
+`active=Yes`/`notable=Yes` accordingly. If your portal uses real BOOLEAN
+columns instead, change those query strings to `active=true`/`notable=true`.
 
 ### One-time setup
 
