@@ -28,57 +28,6 @@
   text-align: center;
 }
 
-.press-base-mockup .press-notable {
-  max-width: var(--press-max-width);
-  margin: 0 auto 2.5rem;
-  padding: 0 20px;
-}
-
-.press-base-mockup .press-notable h2 {
-  font-family: Inter, sans-serif;
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
-
-.press-base-mockup .press-notable-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.press-base-mockup .press-notable-card {
-  flex: 1 1 260px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  border: 1px solid #e2d7c8;
-  border-radius: var(--press-radius);
-  padding: 1rem 1.25rem;
-  text-decoration: none;
-  color: #333;
-  background: #fff;
-  transition: box-shadow 0.15s ease;
-}
-
-.press-base-mockup .press-notable-card:hover {
-  box-shadow: 0 2px 10px rgba(125, 78, 13, 0.15);
-}
-
-.press-base-mockup .press-notable-card .press-org {
-  color: var(--press-brand-orange);
-  font-weight: 600;
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-}
-
-.press-base-mockup .press-notable-card .press-title {
-  font-family: Inter, sans-serif;
-  font-size: 1.0625rem;
-  color: #000;
-}
-
 .press-base-mockup .press-filters {
   max-width: var(--press-max-width);
   margin: 0 auto 2rem;

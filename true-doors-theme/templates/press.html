@@ -38,7 +38,7 @@ label: Press
        select the `press` table. Publish the page at the path referenced by
        `press_base_path` below (defaults to "/press").
 
-  Assumes `active` and `notable` are HubDB SELECT columns with "Yes"/"No"
+  Assumes `active` is a HubDB SELECT column with "Yes"/"No"
   options (not BOOLEAN); adjust the query strings below if that's not the
   case in your portal.
 #}
@@ -48,6 +48,18 @@ label: Press
 <head>
   {{ standard_header_includes }}
   <title>{{ page_meta.html_title }}</title>
+  {#
+    BASE's theme typography (font-family: Inter, serif / Inter, sans-serif)
+    is normally loaded by HubSpot automatically for pages assigned to the
+    BASE theme. This page is still technically a "True Doors Theme" page
+    (we're only borrowing BASE's compiled CSS/partials), so that automatic
+    font loading doesn't happen here — without it, headings fall back to
+    the browser's generic "serif" font instead of Inter. Load it ourselves
+    so headings/body text match real BASE pages (e.g. /testimonials).
+  #}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="https://www.truedoors.com/hubfs/hub_generated/template_assets/1/197751554966/1784031541159/template_main.css">
   <link rel="stylesheet" href="https://www.truedoors.com/hubfs/hub_generated/module_assets/1/81874284157/1741471558105/module_blog-listings.min.css">
   <link rel="stylesheet" href="{{ get_asset_url('../css/press-base-design.css') }}">
@@ -133,22 +145,6 @@ label: Press
               {% set start = (page_num - 1) * page_size %}
               {% set end = start + page_size %}
               {% set page_rows = ns.filtered[start:end] %}
-
-              {% set notable_rows = hubdb_table_rows("press", "active=Yes&notable=Yes&orderBy=-date_published&limit=3") %}
-
-              {% if notable_rows|length > 0 %}
-                <section class="press-notable">
-                  <h2>Notable press</h2>
-                  <div class="press-notable-list">
-                    {% for row in notable_rows %}
-                      <a class="press-notable-card" href="{{ press_base_path }}/{{ row.hs_path }}">
-                        <span class="press-org">{{ row.organisation }}</span>
-                        <span class="press-title">{{ row.title }}</span>
-                      </a>
-                    {% endfor %}
-                  </div>
-                </section>
-              {% endif %}
 
               <form class="press-filters" method="get" action="{{ press_base_path }}">
                 <label>
