@@ -77,22 +77,26 @@ async function main() {
       name: NAME,
       slug: SLUG,
       templatePath: TARGET_TEMPLATE_PATH,
+      state: "PUBLISHED",
     });
-    console.log(`Created page id=${page.id}`);
+    console.log(`Created page id=${page.id}, state=${page.state}`);
   } else {
-    console.log(`Found page id=${page.id}, current templatePath=${page.templatePath}`);
-    if (page.templatePath !== TARGET_TEMPLATE_PATH) {
-      console.log(`Updating templatePath to "${TARGET_TEMPLATE_PATH}"...`);
+    console.log(`Found page id=${page.id}, current templatePath=${page.templatePath}, state=${page.state}`);
+    const patch = {};
+    if (page.templatePath !== TARGET_TEMPLATE_PATH) patch.templatePath = TARGET_TEMPLATE_PATH;
+    if (page.state !== "PUBLISHED") patch.state = "PUBLISHED";
+    if (Object.keys(patch).length > 0) {
+      console.log(`Updating ${Object.keys(patch).join(", ")}...`);
       page = await hubspotRequest(
         token,
         "PATCH",
         `/cms/v3/pages/site-pages/${page.id}`,
-        { templatePath: TARGET_TEMPLATE_PATH }
+        patch
       );
     }
   }
 
-  console.log("Publishing the page...");
+  console.log("Pushing draft live (in case of pending draft changes)...");
   await hubspotRequest(token, "POST", `/cms/v3/pages/site-pages/${page.id}/draft/push-live`, {});
   console.log(`Done. https://www.truedoors.com/${SLUG} should now render the BASE design mockup.`);
 }
