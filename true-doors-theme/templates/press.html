@@ -49,7 +49,7 @@ label: Press
           {% if row.date_published %}
             <span class="press-date">{{ row.date_published|datetimeformat("%B %-d, %Y") }}</span>
           {% endif %}
-          {% if row.type %}<span class="press-type-badge">{{ row.type }}</span>{% endif %}
+          {% if row.type %}<span class="press-type-badge">{{ row.type.label }}</span>{% endif %}
         </p>
 
         {% if row.country or row.continent %}
@@ -90,7 +90,7 @@ label: Press
     {% set ns = namespace(filtered=[]) %}
     {% for row in all_rows %}
       {% if row.title
-        and (selected_type == "" or row.type == selected_type)
+        and (selected_type == "" or row.type.name == selected_type)
         and (selected_continent == "" or row.continent == selected_continent) %}
         {% set ns.filtered = ns.filtered + [row] %}
       {% endif %}
@@ -148,22 +148,24 @@ label: Press
       </form>
 
       <div class="press-list">
-        {% for row in page_rows %}
-          <article class="press-card">
-            <a class="press-card-link" href="{{ press_base_path }}/{{ row.hs_path }}">
-              <h2>{{ row.title }}</h2>
-              <p class="press-meta">
-                {% if row.organisation %}<span class="press-org">{{ row.organisation }}</span>{% endif %}
-                {% if row.date_published %}
-                  <span class="press-date">{{ row.date_published|datetimeformat("%B %-d, %Y") }}</span>
-                {% endif %}
-                {% if row.type %}<span class="press-type-badge">{{ row.type }}</span>{% endif %}
-              </p>
-            </a>
-          </article>
+        {% if page_rows|length > 0 %}
+          {% for row in page_rows %}
+            <article class="press-card">
+              <a class="press-card-link" href="{{ press_base_path }}/{{ row.hs_path }}">
+                <h2>{{ row.title }}</h2>
+                <p class="press-meta">
+                  {% if row.organisation %}<span class="press-org">{{ row.organisation }}</span>{% endif %}
+                  {% if row.date_published %}
+                    <span class="press-date">{{ row.date_published|datetimeformat("%B %-d, %Y") }}</span>
+                  {% endif %}
+                  {% if row.type %}<span class="press-type-badge">{{ row.type.label }}</span>{% endif %}
+                </p>
+              </a>
+            </article>
+          {% endfor %}
         {% else %}
           <p>No press mentions found.</p>
-        {% endfor %}
+        {% endif %}
       </div>
 
       {% if total_pages > 1 %}
