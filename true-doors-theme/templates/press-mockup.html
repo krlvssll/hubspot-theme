@@ -77,7 +77,7 @@ label: Press (BASE theme design mockup)
             {% set ns = namespace(filtered=[]) %}
             {% for row in all_rows %}
               {% if row.title
-                and (selected_type == "" or row.type == selected_type)
+                and (selected_type == "" or row.type.name == selected_type)
                 and (selected_continent == "" or row.continent == selected_continent) %}
                 {% set ns.filtered = ns.filtered + [row] %}
               {% endif %}
@@ -131,26 +131,28 @@ label: Press (BASE theme design mockup)
             </form>
 
             <div class="press-list-wrapper">
-              <div class="blog-index">
-                {% for row in page_rows %}
-                  <div class="blog-index__post blog-index__post--small">
-                    <article class="press-card">
-                      <a class="press-card-link" href="{{ press_base_path }}/{{ row.hs_path }}">
-                        <h2>{{ row.title }}</h2>
-                        <p class="press-meta">
-                          {% if row.organisation %}<span class="press-org">{{ row.organisation }}</span>{% endif %}
-                          {% if row.date_published %}
-                            <span class="press-date">{{ row.date_published|datetimeformat("%B %-d, %Y") }}</span>
-                          {% endif %}
-                          {% if row.type %}<span class="press-type-badge">{{ row.type }}</span>{% endif %}
-                        </p>
-                      </a>
-                    </article>
-                  </div>
-                {% else %}
-                  <p>No press mentions found.</p>
-                {% endfor %}
-              </div>
+              {% if page_rows|length > 0 %}
+                <div class="blog-index">
+                  {% for row in page_rows %}
+                    <div class="blog-index__post blog-index__post--small">
+                      <article class="press-card">
+                        <a class="press-card-link" href="{{ press_base_path }}/{{ row.hs_path }}">
+                          <h2>{{ row.title }}</h2>
+                          <p class="press-meta">
+                            {% if row.organisation %}<span class="press-org">{{ row.organisation }}</span>{% endif %}
+                            {% if row.date_published %}
+                              <span class="press-date">{{ row.date_published|datetimeformat("%B %-d, %Y") }}</span>
+                            {% endif %}
+                            {% if row.type %}<span class="press-type-badge">{{ row.type.label }}</span>{% endif %}
+                          </p>
+                        </a>
+                      </article>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <p>No press mentions found.</p>
+              {% endif %}
             </div>
 
             {% if total_pages > 1 %}
