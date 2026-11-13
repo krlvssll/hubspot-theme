@@ -78,28 +78,35 @@
       {% set filter_query = preview_query %}
       {% if selected_type %}{% set filter_query = filter_query ~ ("&" if filter_query else "") ~ "type=" ~ selected_type|urlencode %}{% endif %}
       {% if selected_continent %}{% set filter_query = filter_query ~ ("&" if filter_query else "") ~ "continent=" ~ selected_continent|urlencode %}{% endif %}
-      <form class="brand-press__filters" method="get" action="{{ press_path|escape_url }}">
-        {% if request.query_dict.hs_preview %}<input type="hidden" name="hs_preview" value="{{ request.query_dict.hs_preview|escape_attr }}">{% endif %}
-        <div>
-          <label for="press-type">Coverage type</label>
-          <select id="press-type" name="type">
-            <option value="">All types</option>
-            {% if selected_type and selected_type not in ns.types %}<option value="{{ selected_type|escape_attr }}" selected>{{ selected_type|escape_html }}</option>{% endif %}
-            {% for option in ns.types|sort %}<option value="{{ option|escape_attr }}"{% if selected_type == option %} selected{% endif %}>{{ option|escape_html }}</option>{% endfor %}
-          </select>
-        </div>
-        <div>
-          <label for="press-continent">Region</label>
-          <select id="press-continent" name="continent">
-            <option value="">All regions</option>
-            {% if selected_continent and selected_continent not in ns.continents %}<option value="{{ selected_continent|escape_attr }}" selected>{{ selected_continent|escape_html }}</option>{% endif %}
-            {% for option in ns.continents|sort %}<option value="{{ option|escape_attr }}"{% if selected_continent == option %} selected{% endif %}>{{ option|escape_html }}</option>{% endfor %}
-          </select>
-        </div>
-        <button class="brand-press__button" type="submit">Apply filters</button>
-        {% if selected_type or selected_continent %}<a href="{{ press_path|escape_url }}{% if preview_query %}?{{ preview_query|escape_attr }}{% endif %}">Clear filters</a>{% endif %}
-      </form>
-      <p class="brand-press__result-count">{{ total_rows }} press mention{% if total_rows != 1 %}s{% endif %}</p>
+      {% set type_query = preview_query %}
+      {% if selected_continent %}{% set type_query = type_query ~ ("&" if type_query else "") ~ "continent=" ~ selected_continent|urlencode %}{% endif %}
+      {% set region_query = preview_query %}
+      {% if selected_type %}{% set region_query = region_query ~ ("&" if region_query else "") ~ "type=" ~ selected_type|urlencode %}{% endif %}
+      <div class="brand-press__filters">
+        <nav class="brand-press__filter-row" aria-label="Filter press by coverage type">
+          <ul>
+            <li><a href="{{ press_path|escape_url }}{% if type_query %}?{{ type_query|escape_attr }}{% endif %}#press-results"{% if not selected_type %} aria-current="true"{% endif %}>All coverage</a></li>
+            {% if selected_type and selected_type not in ns.types %}{% set ns.types = ns.types + [selected_type] %}{% endif %}
+            {% for option in ns.types|sort %}
+              <li><a href="{{ press_path|escape_url }}?{% if type_query %}{{ type_query|escape_attr }}&amp;{% endif %}type={{ option|urlencode|escape_attr }}#press-results"{% if selected_type == option %} aria-current="true"{% endif %}>{{ option|escape_html }}</a></li>
+            {% endfor %}
+          </ul>
+        </nav>
+        <nav class="brand-press__filter-row brand-press__filter-row--regions" aria-label="Filter press by region">
+          <span class="brand-press__filter-label">Region</span>
+          <ul>
+            <li><a href="{{ press_path|escape_url }}{% if region_query %}?{{ region_query|escape_attr }}{% endif %}#press-results"{% if not selected_continent %} aria-current="true"{% endif %}>Everywhere</a></li>
+            {% if selected_continent and selected_continent not in ns.continents %}{% set ns.continents = ns.continents + [selected_continent] %}{% endif %}
+            {% for option in ns.continents|sort %}
+              <li><a href="{{ press_path|escape_url }}?{% if region_query %}{{ region_query|escape_attr }}&amp;{% endif %}continent={{ option|urlencode|escape_attr }}#press-results"{% if selected_continent == option %} aria-current="true"{% endif %}>{{ option|escape_html }}</a></li>
+            {% endfor %}
+          </ul>
+        </nav>
+      </div>
+      <div class="brand-press__results-heading" id="press-results">
+        <p class="brand-press__result-count">{{ total_rows }} press mention{% if total_rows != 1 %}s{% endif %}</p>
+        {% if selected_type or selected_continent %}<a href="{{ press_path|escape_url }}{% if preview_query %}?{{ preview_query|escape_attr }}{% endif %}#press-results">Clear all filters</a>{% endif %}
+      </div>
       {% if page_rows %}
         <div class="brand-press__grid">
           {% for row in page_rows %}
