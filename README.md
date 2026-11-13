@@ -194,8 +194,9 @@ go directly to the external source where one is available.
 
 The listing follows the original table contract: `active=Yes`, newest
 first, blank titles excluded, and a maximum of 1,000 loaded active rows.
-Coverage/region options come from those rows. Filters use an explicit
-submit button, reset pagination, and preserve HubSpot's preview parameter.
+Coverage/region options come from those rows. Filters use two rows of
+text links with underlined active selections, work without JavaScript,
+preserve the other filter and HubSpot's preview parameter, and reset pagination.
 Pagination shows 12 mentions at a time and clamps out-of-range page
 numbers. Detail pages display source metadata and link to the original
 coverage rather than copying third-party articles.
