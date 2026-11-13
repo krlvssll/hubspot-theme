@@ -1,5 +1,16 @@
 {
-  "label": "True Doors — Brand Redesign",
-  "screenshot_path": "../images/theme-preview.png",
-  "enable_domain_stylesheets": true
+  "label": "True Doors \u2014 Brand Redesign",
+  "preview_path": "./templates/home.html",
+  "screenshot_path": "./images/template-previews/home.png",
+  "enable_domain_stylesheets": false,
+  "license": "./license.txt",
+  "responsive_breakpoints": [
+    {
+      "name": "mobile",
+      "mediaQuery": "@media (max-width: 767px)",
+      "previewWidth": {
+        "value": 477
+      }
+    }
+  ]
 }

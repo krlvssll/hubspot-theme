@@ -1,0 +1,6 @@
+Proprietary. All rights reserved by True Doors.
+
+This theme is based on HubSpot's open-source CMS theme boilerplate
+(https://github.com/HubSpot/cms-theme-boilerplate), licensed under the
+Apache License, Version 2.0. See the upstream repository for the original
+license terms covering the unmodified boilerplate code.

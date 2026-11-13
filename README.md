@@ -7,12 +7,16 @@ This repository holds two separate HubSpot CMS themes:
   own `true-doors-theme` location in HubSpot, running the live site exactly
   as before.
 - [`true-doors-brand-theme/`](./true-doors-brand-theme) — a **brand new,
-  separate** theme with a True Doors brand-inspired redesign (header/nav,
-  hero section, footer, polished project cards). It deploys to its own
-  `true-doors-brand-theme` location in HubSpot under a distinct label,
-  `True Doors — Brand Redesign`, so it does **not** overwrite or affect the
-  live `true-doors-theme`. You can preview/assign it to pages independently
-  in HubSpot's theme picker before deciding to adopt it for the live site.
+  separate** theme with a True Doors brand-inspired redesign, built on top
+  of HubSpot's official open-source
+  [CMS theme boilerplate](https://developers.hubspot.com/docs/cms/start-building/building-blocks/themes/hubspot-cms-boilerplate)
+  (drag-and-drop sections, reusable modules, `fields.json`-driven theme
+  editor styling, full page/module/system-page scaffold) rather than
+  hand-rolled HTML/CSS. It deploys to its own `true-doors-brand-theme`
+  location in HubSpot under a distinct label, `True Doors — Brand
+  Redesign`, so it does **not** overwrite or affect the live
+  `true-doors-theme`. You can preview/assign it to pages independently in
+  HubSpot's theme picker before deciding to adopt it for the live site.
 
 ## Structure
 
@@ -29,12 +33,22 @@ true-doors-theme/            # Original, live theme — untouched
     └── main.js            # Theme JavaScript
 
 true-doors-brand-theme/      # New, separate brand-redesign theme
+│                            # (based on HubSpot's CMS theme boilerplate)
 ├── theme.json
+├── fields.json              # Theme editor fields: brand colors, fonts, spacing
 ├── templates/
-│   ├── home.html
-│   └── projects.html
+│   ├── layouts/base.html    # Base layout (header/body/footer blocks)
+│   ├── partials/            # Global header & footer partials
+│   ├── home.html            # Hero, benefits cards, and projects CTA
+│   ├── projects.html        # Projects listing page (HubDB-backed)
+│   └── ...                  # Full boilerplate page scaffold (about, blog,
+│                            #   contact, pricing, system pages, etc.)
+├── sections/                # Drag-and-drop reusable sections (hero, CTA, cards, ...)
+├── modules/                 # Reusable modules (button, card, menu, ...)
 ├── css/
-│   └── main.css
+│   ├── main.css             # ITCSS-style entry point (generic/objects/elements/components)
+│   ├── theme-overrides.css  # Converts fields.json values into CSS
+│   └── components/_projects.css  # Projects page/card styling
 └── js/
     └── main.js
 
@@ -97,6 +111,9 @@ sets up three related HubDB tables:
 | `companies` | Companies associated with a project | `name` (TEXT), `website` (TEXT) |
 | `products` | Products that can be attached to a project | `name` (TEXT), `sku` (TEXT), `description` (TEXT) |
 | `projects` | The projects shown on the Projects page | `project_name` (TEXT), `location_name` (TEXT), `city` (TEXT), `region` (TEXT), `country` (TEXT), `status` (SELECT: "In Progress" / "Completed"), `start_date` (DATE), `description` (RICHTEXT), `company` (FOREIGN_ID -> `companies`), `products` (FOREIGN_ID -> `products`) |
+
+`true-doors-brand-theme/templates/projects.html` renders the same `projects`
+HubDB table, with styling from `css/components/_projects.css`.
 
 ### Running the HubDB setup
 
