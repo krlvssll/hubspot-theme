@@ -1,0 +1,133 @@
+<!--
+  templateType: page
+  isAvailableForNewContent: true
+  label: Press - community design
+-->
+{% extends "./community-story.html" %}
+
+{% block body %}
+  {{ require_css(get_asset_url("../css/templates/press.css")) }}
+  {% set press_path = request.path|regex_replace("/+$", "") %}
+  {% if dynamic_page_hubdb_row %}
+    {% set press_path = press_path|regex_replace("/[^/]+$", "") %}
+  {% endif %}
+  {% set preview_query = "" %}
+  {% if request.query_dict.hs_preview %}
+    {% set preview_query = "hs_preview=" ~ request.query_dict.hs_preview|urlencode %}
+  {% endif %}
+  <div class="brand-press">
+    {% if dynamic_page_hubdb_row %}
+      {% set row = dynamic_page_hubdb_row %}
+      <article class="brand-press__detail">
+        <a class="brand-press__back" href="{{ press_path|escape_url }}{% if preview_query %}?{{ preview_query|escape_attr }}{% endif %}">&#8592; Back to Press</a>
+        <p class="brand-press__eyebrow">True Doors in the news</p>
+        <h1>{{ row.title|escape_html }}</h1>
+        <div class="brand-press__meta">
+          {% if row.organisation %}<span>{{ row.organisation|escape_html }}</span>{% endif %}
+          {% if row.date_published %}<time datetime="{{ row.date_published|datetimeformat('%Y-%m-%d', 'UTC')|escape_attr }}">{{ row.date_published|datetimeformat('%e %B %Y', 'UTC')|escape_html }}</time>{% endif %}
+          {% if row.type.label %}<span class="brand-press__badge">{{ row.type.label|escape_html }}</span>{% endif %}
+        </div>
+        {% if row.country or row.continent %}
+          <p class="brand-press__location">{{ row.country|escape_html }}{% if row.country and row.continent %} &middot; {% endif %}{{ row.continent|escape_html }}</p>
+        {% endif %}
+        {% if row.source %}
+          <p class="brand-press__source-note">This coverage was published by an external source.</p>
+          <a class="brand-press__button" href="{{ row.source|escape_url }}" target="_blank" rel="noopener noreferrer">Read the original coverage <span aria-hidden="true">&#8599;</span><span class="brand-press__sr-only"> (opens in a new tab)</span></a>
+        {% else %}
+          <p>The original source link is not available for this mention.</p>
+        {% endif %}
+      </article>
+    {% else %}
+      <header class="brand-press__opening">
+        <p class="brand-press__eyebrow">Around the world</p>
+        <h1>Press</h1>
+        <p class="brand-press__intro">Stories, conversations and coverage about making care homes feel more like home.</p>
+      </header>
+      {% set page_size = 12 %}
+      {% set page_num = request.query_dict.page|default(1)|int %}
+      {% if page_num < 1 %}{% set page_num = 1 %}{% endif %}
+      {% set selected_type = request.query_dict.type|default("") %}
+      {% set selected_continent = request.query_dict.continent|default("") %}
+      {% set all_rows = hubdb_table_rows("press", "active=Yes&orderBy=-date_published&limit=1000") %}
+      {% set ns = namespace(filtered=[], types=[], continents=[]) %}
+      {% for row in all_rows %}
+        {% if row.title %}
+          {% if row.type.name and row.type.name not in ns.types %}
+            {% set ns.types = ns.types + [row.type.name] %}
+          {% endif %}
+          {% if row.continent and row.continent not in ns.continents %}
+            {% set ns.continents = ns.continents + [row.continent] %}
+          {% endif %}
+          {% if (not selected_type or row.type.name == selected_type) and (not selected_continent or row.continent == selected_continent) %}
+            {% set ns.filtered = ns.filtered + [row] %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+      {% set total_rows = ns.filtered|length %}
+      {% set total_pages = ((total_rows - 1) // page_size) + 1 if total_rows > 0 else 1 %}
+      {% if page_num > total_pages %}{% set page_num = total_pages %}{% endif %}
+      {% set start = (page_num - 1) * page_size %}
+      {% set page_rows = ns.filtered[start:start + page_size] %}
+      {% set filter_query = preview_query %}
+      {% if selected_type %}{% set filter_query = filter_query ~ ("&" if filter_query else "") ~ "type=" ~ selected_type|urlencode %}{% endif %}
+      {% if selected_continent %}{% set filter_query = filter_query ~ ("&" if filter_query else "") ~ "continent=" ~ selected_continent|urlencode %}{% endif %}
+      <form class="brand-press__filters" method="get" action="{{ press_path|escape_url }}">
+        {% if request.query_dict.hs_preview %}<input type="hidden" name="hs_preview" value="{{ request.query_dict.hs_preview|escape_attr }}">{% endif %}
+        <div>
+          <label for="press-type">Coverage type</label>
+          <select id="press-type" name="type">
+            <option value="">All types</option>
+            {% if selected_type and selected_type not in ns.types %}<option value="{{ selected_type|escape_attr }}" selected>{{ selected_type|escape_html }}</option>{% endif %}
+            {% for option in ns.types|sort %}<option value="{{ option|escape_attr }}"{% if selected_type == option %} selected{% endif %}>{{ option|escape_html }}</option>{% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="press-continent">Region</label>
+          <select id="press-continent" name="continent">
+            <option value="">All regions</option>
+            {% if selected_continent and selected_continent not in ns.continents %}<option value="{{ selected_continent|escape_attr }}" selected>{{ selected_continent|escape_html }}</option>{% endif %}
+            {% for option in ns.continents|sort %}<option value="{{ option|escape_attr }}"{% if selected_continent == option %} selected{% endif %}>{{ option|escape_html }}</option>{% endfor %}
+          </select>
+        </div>
+        <button class="brand-press__button" type="submit">Apply filters</button>
+        {% if selected_type or selected_continent %}<a href="{{ press_path|escape_url }}{% if preview_query %}?{{ preview_query|escape_attr }}{% endif %}">Clear filters</a>{% endif %}
+      </form>
+      <p class="brand-press__result-count">{{ total_rows }} press mention{% if total_rows != 1 %}s{% endif %}</p>
+      {% if page_rows %}
+        <div class="brand-press__grid">
+          {% for row in page_rows %}
+            <article class="brand-press__card">
+              <div class="brand-press__meta">
+                {% if row.type.label %}<span class="brand-press__badge">{{ row.type.label|escape_html }}</span>{% endif %}
+                {% if row.date_published %}<time datetime="{{ row.date_published|datetimeformat('%Y-%m-%d', 'UTC')|escape_attr }}">{{ row.date_published|datetimeformat('%e %B %Y', 'UTC')|escape_html }}</time>{% endif %}
+              </div>
+              <h2>
+                {% if dynamic_page_hubdb_table_id and row.hs_path %}
+                  <a href="{{ (press_path ~ '/' ~ row.hs_path)|escape_url }}{% if preview_query %}?{{ preview_query|escape_attr }}{% endif %}">{{ row.title|escape_html }} <span aria-hidden="true">&#8594;</span></a>
+                {% elif row.source %}
+                  <a href="{{ row.source|escape_url }}" target="_blank" rel="noopener noreferrer">{{ row.title|escape_html }} <span aria-hidden="true">&#8599;</span><span class="brand-press__sr-only"> (opens in a new tab)</span></a>
+                {% else %}
+                  {{ row.title|escape_html }}
+                {% endif %}
+              </h2>
+              {% if row.organisation %}<p class="brand-press__organisation">{{ row.organisation|escape_html }}</p>{% endif %}
+              {% if row.country %}<p class="brand-press__location">{{ row.country|escape_html }}</p>{% endif %}
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="brand-press__empty"><h2>No coverage found.</h2><p>{% if selected_type or selected_continent %}Try clearing the filters to see more mentions.{% else %}There are no published press mentions to show yet.{% endif %}</p></div>
+      {% endif %}
+      {% if total_pages > 1 %}
+        <nav class="brand-press__pagination" aria-label="Press pagination">
+          {% if page_num > 1 %}<a href="{{ press_path|escape_url }}?page={{ page_num - 1 }}{% if filter_query %}&amp;{{ filter_query|escape_attr }}{% endif %}">&#8592; Previous</a>{% endif %}
+          <span>Page {{ page_num }} of {{ total_pages }}</span>
+          {% if page_num < total_pages %}<a href="{{ press_path|escape_url }}?page={{ page_num + 1 }}{% if filter_query %}&amp;{{ filter_query|escape_attr }}{% endif %}">Next &#8594;</a>{% endif %}
+        </nav>
+      {% endif %}
+      {% if is_in_editor and not dynamic_page_hubdb_table_id %}
+        <p class="brand-press__setup">To enable on-site detail pages, select the existing press table in this page's HubDB dynamic-page settings. Without that setting, mentions link to their original sources.</p>
+      {% endif %}
+    {% endif %}
+  </div>
+{% endblock body %}

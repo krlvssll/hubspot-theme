@@ -174,6 +174,29 @@ HUBSPOT_PAT=your-private-app-token node scripts/setup_hubdb.js
 
 ## HubDB-backed Press pages (listing + detail)
 
+### Brand-theme Press template
+
+`true-doors-brand-theme/templates/press.html` (**Press - community design**)
+uses the quiet community-story header/footer, charcoal typography, teal
+controls, and responsive press cards. It reads the existing `press` table
+without modifying its data or changing the original theme's `/press` page.
+No photography is fabricated: the existing table has no image column.
+
+Create a separate page in **True Doors — Brand Redesign** with this
+template. For on-site detail pages, enable HubDB dynamic pages and select
+the existing `press` table; rows need their existing `hs_path` values.
+The template derives its listing route from the page URL rather than
+hardcoding `/press`. Without dynamic-page configuration, listing links
+go directly to the external source where one is available.
+
+The listing follows the original table contract: `active=Yes`, newest
+first, blank titles excluded, and a maximum of 1,000 loaded active rows.
+Coverage/region options come from those rows. Filters use an explicit
+submit button, reset pagination, and preserve HubSpot's preview parameter.
+Pagination shows 12 mentions at a time and clamps out-of-range page
+numbers. Detail pages display source metadata and link to the original
+coverage rather than copying third-party articles.
+
 The `true-doors-theme/templates/press.html` template is a single HubL
 template that serves both a filterable, paginated **listing** page and, when
 bound as a HubDB dynamic page, a per-row **detail** page, from an existing
