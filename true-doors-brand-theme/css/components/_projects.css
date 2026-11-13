@@ -1,0 +1,85 @@
+/* Projects page header */
+
+.projects-header {
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.projects-header__intro {
+  color: #6b6358;
+  margin: 8px auto 0;
+  max-width: 640px;
+}
+
+/* Projects grid */
+
+.projects-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.projects-grid__empty {
+  color: #6b6358;
+  grid-column: 1 / -1;
+  text-align: center;
+}
+
+/* Project card */
+
+.project-card {
+  background-color: #F4EDE3;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.project-card__title {
+  margin: 0 0 8px;
+}
+
+.project-card__location {
+  color: #6b6358;
+  margin: 0 0 8px;
+}
+
+.project-card__status {
+  background-color: #4F7A6F;
+  border-radius: 999px;
+  color: #FFFFFF;
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0 0 12px;
+  padding: 4px 12px;
+  text-transform: uppercase;
+}
+
+.project-card__date {
+  color: #6b6358;
+  font-size: 14px;
+  margin: 0 0 12px;
+}
+
+.project-card__description {
+  margin: 0 0 12px;
+}
+
+.project-card__meta {
+  color: #6b6358;
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.project-card__products {
+  font-size: 14px;
+}
+
+.project-card__meta-label {
+  color: #6b6358;
+  font-weight: 700;
+}
+
+.project-card__products ul {
+  margin: 4px 0 0;
+  padding-left: 20px;
+}
