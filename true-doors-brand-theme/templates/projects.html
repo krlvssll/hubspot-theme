@@ -1,0 +1,77 @@
+<!--
+  templateType: page
+  isAvailableForNewContent: true
+  label: Projects
+  screenshotPath: ../images/template-previews/home.png
+-->
+{% extends "./layouts/base.html" %}
+
+{% block body %}
+<div class="body-container body-container--projects">
+  <section class="content-wrapper content-wrapper--vertical-spacing">
+
+    <header class="projects-header">
+      <h1>
+        {% module "page_title" path="@hubspot/text"
+          label="Page title",
+          value="Projects"
+        %}
+      </h1>
+      <p class="projects-header__intro">
+        {% module "page_intro" path="@hubspot/rich_text"
+          label="Page intro",
+          html="<p>A selection of care communities and neighbourhoods we&rsquo;ve helped feel a little more like home.</p>"
+        %}
+      </p>
+    </header>
+
+    <div class="projects-grid">
+      {% for row in hubdb_table_rows("projects", "") %}
+        <article class="project-card">
+          <h2 class="project-card__title">{{ row.project_name }}</h2>
+
+          <p class="project-card__location">
+            {{ row.location_name }} &mdash;
+            {% if row.city %}{{ row.city }}, {% endif %}
+            {% if row.region %}{{ row.region }}, {% endif %}
+            {{ row.country }}
+          </p>
+
+          {% if row.status %}
+            <p class="project-card__status">{{ row.status }}</p>
+          {% endif %}
+
+          {% if row.start_date %}
+            <p class="project-card__date">Start date: {{ row.start_date|datetimeformat("%B %-d, %Y") }}</p>
+          {% endif %}
+
+          {% if row.description %}
+            <div class="project-card__description">{{ row.description }}</div>
+          {% endif %}
+
+          {% if row.company %}
+            <p class="project-card__meta">
+              Company:
+              {% for c in row.company %}{{ c.name }}{% if not loop.last %}, {% endif %}{% endfor %}
+            </p>
+          {% endif %}
+
+          {% if row.products %}
+            <div class="project-card__products">
+              <span class="project-card__meta-label">Products</span>
+              <ul>
+                {% for p in row.products %}
+                  <li>{{ p.name }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+        </article>
+      {% else %}
+        <p class="projects-grid__empty">No projects yet &mdash; check back soon.</p>
+      {% endfor %}
+    </div>
+
+  </section>
+</div>
+{% endblock body %}

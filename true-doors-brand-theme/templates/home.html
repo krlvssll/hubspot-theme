@@ -1,0 +1,111 @@
+<!--
+  templateType: page
+  isAvailableForNewContent: true
+  label: Home
+  screenshotPath: ../images/template-previews/home.png
+-->
+{% extends "./layouts/base.html" %}
+
+{% block body %}
+
+{# All templates are recommended to have an h1 present for both accessibility and SEO best practice. This should be at the top of the template before any other textual content. The h1 element below is within a dnd area to allow content editors the ability to adjust the content and alignment of the text. #}
+
+{% dnd_area "dnd_area"
+  label="Main section",
+  class="body-container body-container--home"
+%}
+
+  {# Hero: warm, centered welcome message introducing the brand #}
+
+  {% dnd_section
+    background_color="#F4EDE3",
+    max_width=780,
+    padding={
+      "default": {
+        "top": 120,
+        "right": 20,
+        "bottom": 120,
+        "left": 20
+      },
+      "mobile": {
+        "top": 72,
+        "right": 20,
+        "bottom": 72,
+        "left": 20
+      }
+    },
+    vertical_alignment="MIDDLE"
+  %}
+    {% dnd_column %}
+      {% dnd_row
+        padding={
+          "default": {
+            "top": 0,
+            "right": 0,
+            "bottom": 32,
+            "left": 0
+          },
+          "mobile": {
+            "top": 0,
+            "right": 0,
+            "bottom": 24,
+            "left": 0
+          }
+        }
+      %}
+        {% dnd_module
+          path="@hubspot/rich_text",
+          html='<div style="text-align: center"><h1>Doors that feel like home.</h1><p>Custom decals that help residents recognize their own door and bring warmth, dignity, and a sense of belonging to every hallway.</p></div>'
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+      {% dnd_row %}
+        {% dnd_module
+          path="../modules/button",
+          button_text="View our projects",
+          link={
+            "url": {
+              "href": "/projects",
+              "type": "EXTERNAL"
+            }
+          },
+          styles={
+            "alignment": {
+              "alignment": {
+                "horizontal_align": "CENTER"
+              }
+            }
+          }
+        %}
+        {% end_dnd_module %}
+      {% end_dnd_row %}
+    {% end_dnd_column %}
+  {% end_dnd_section %}
+
+  {# Benefits: why personalized door decals matter #}
+
+  {% include_dnd_partial path="../sections/cards.html"
+    context={
+      "content": '<div style="text-align: center;"><h2>Why personalized doors matter</h2></div>',
+      "card_one_image": "",
+      "card_one_content": "<h3>Easier recognition</h3><p>A familiar name and image on the door helps residents find their own room with confidence, reducing confusion and anxiety.</p>",
+      "card_two_image": "",
+      "card_two_content": "<h3>More dignity &amp; privacy</h3><p>Personal touches replace sterile room numbers, helping spaces feel less clinical and more like home.</p>",
+      "card_three_image": "",
+      "card_three_content": "<h3>Sparks connection</h3><p>Familiar photos and memories on a door give staff, families, and visitors an easy way to connect with residents.</p>"
+    }
+  %}
+
+  {# Call to action: invite visitors to explore completed projects #}
+
+  {% include_dnd_partial path="../sections/call-to-action.html"
+    context={
+      "background_image": get_asset_url("../images/large-placeholder-image.png"),
+      "content": '<div style="text-align: center"><h2>See the difference in real communities</h2><p>Explore care facilities and neighbourhoods we&rsquo;ve transformed with custom door decals.</p></div>',
+      "button_text": "Browse projects",
+      "button_link": "/projects"
+    }
+  %}
+
+{% end_dnd_area %}
+{% endblock body %}

@@ -1,0 +1,176 @@
+/*
+ * Press — BASE theme design mockup stylesheet.
+ *
+ * Scoped to .press-base-mockup so it never affects the live Press page
+ * (true-doors-theme/css/main.css) or any other template. Reuses BASE's own
+ * design tokens sampled from the live site (truedoors.com/testimonials):
+ *   - Brand brown (header utility bar):  rgb(125, 78, 13)
+ *   - Brand orange (links/accents):      rgb(240, 153, 32)
+ *   - Body font:   Inter, sans-serif, 18px, #333
+ *   - Heading font: Inter, serif fallback, 44px, weight 400, #000
+ *   - Border radius: 8px (BASE's --base--border-radius)
+ *   - Max content width: 1200px, gutter 40px desktop / 20px mobile
+ *     (BASE's --base--layout-* custom properties)
+ *
+ * Card grid layout reuses BASE's public .blog-index / .blog-index__post--small
+ * classes (from module_blog-listings.min.css) so Press cards get the same
+ * responsive 1 / 2 / 3 column behavior as BASE's native blog listing.
+ */
+
+.press-base-mockup {
+  --press-brand-brown: rgb(125, 78, 13);
+  --press-brand-orange: rgb(240, 153, 32);
+  --press-radius: 8px;
+  --press-max-width: 1200px;
+}
+
+.press-base-mockup .press-hero {
+  text-align: center;
+}
+
+.press-base-mockup .press-filters {
+  max-width: var(--press-max-width);
+  margin: 0 auto 2rem;
+  padding: 0 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1.5rem;
+}
+
+.press-base-mockup .press-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-family: Inter, sans-serif;
+  font-size: 0.875rem;
+  color: #333;
+}
+
+.press-base-mockup .press-filters select {
+  border: 1px solid #ccc;
+  border-radius: var(--press-radius);
+  padding: 0.5rem 0.75rem;
+  font-family: Inter, sans-serif;
+  font-size: 0.9375rem;
+  min-width: 180px;
+}
+
+.press-base-mockup .press-filters-clear {
+  color: var(--press-brand-orange);
+  font-size: 0.875rem;
+  align-self: center;
+}
+
+.press-base-mockup .press-list-wrapper {
+  max-width: var(--press-max-width);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Press card grid — reuses BASE's .blog-index / .blog-index__post--small
+   flexbox grid (1 col mobile, 2 col @768px, 3 col @1000px). */
+.press-base-mockup .press-card {
+  border: 1px solid #e2d7c8;
+  border-radius: var(--press-radius);
+  padding: 1.25rem 1.5rem;
+  height: 100%;
+  background: #fff;
+  transition: box-shadow 0.15s ease;
+}
+
+.press-base-mockup .press-card:hover {
+  box-shadow: 0 2px 10px rgba(125, 78, 13, 0.15);
+}
+
+.press-base-mockup .press-card-link {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+}
+
+.press-base-mockup .press-card h2 {
+  font-family: Inter, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.6rem;
+  color: #000;
+}
+
+.press-base-mockup .press-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  font-family: Inter, sans-serif;
+  font-size: 0.875rem;
+  color: #555;
+  margin: 0;
+}
+
+.press-base-mockup .press-org {
+  color: var(--press-brand-orange);
+  font-weight: 600;
+}
+
+.press-base-mockup .press-type-badge {
+  border: 1px solid var(--press-brand-brown);
+  color: var(--press-brand-brown);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+  font-size: 0.8125rem;
+}
+
+.press-base-mockup .press-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 2.5rem 0;
+  font-family: Inter, sans-serif;
+}
+
+.press-base-mockup .press-pagination a {
+  color: var(--press-brand-orange);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.press-base-mockup .press-pagination-status {
+  color: #555;
+  font-size: 0.9375rem;
+}
+
+/* Detail view */
+.press-base-mockup .press-back-link {
+  display: inline-block;
+  margin: 1.5rem auto 0;
+  color: var(--press-brand-orange);
+  text-decoration: none;
+  font-family: Inter, sans-serif;
+  max-width: var(--press-max-width);
+  padding: 0 20px;
+}
+
+.press-base-mockup .press-detail {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 20px 3rem;
+}
+
+.press-base-mockup .press-location {
+  font-family: Inter, sans-serif;
+  color: #555;
+  margin: 0 0 1rem;
+}
+
+.press-base-mockup .press-read-original {
+  display: inline-block;
+  background: var(--press-brand-orange);
+  color: #fff;
+  border-radius: var(--press-radius);
+  padding: 0.65rem 1.5rem;
+  text-decoration: none;
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+}

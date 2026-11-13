@@ -32,3 +32,107 @@
 .project-back-link a {
   text-decoration: none;
 }
+
+/* Press */
+
+.press-notable {
+  margin-bottom: 2rem;
+}
+
+.press-notable-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.press-notable-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border: 1px solid #e2e2e2;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.press-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.press-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.press-filters-clear {
+  font-size: 0.875rem;
+}
+
+.press-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.press-card {
+  border: 1px solid #e2e2e2;
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+}
+
+.press-card-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.press-card h2 {
+  margin-top: 0;
+}
+
+.press-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.press-type-badge {
+  border: 1px solid #ccc;
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+}
+
+.press-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.press-back-link {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+
+.press-detail .press-cta {
+  margin-top: 1.5rem;
+}
+
+.press-read-original {
+  display: inline-block;
+  border: 1px solid #222;
+  border-radius: 6px;
+  padding: 0.5rem 1.25rem;
+  text-decoration: none;
+  color: inherit;
+}

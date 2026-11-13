@@ -1,0 +1,84 @@
+<article class="community-story">
+  <header class="community-story__opening">
+    <div class="community-story__shell">
+      {% if module.hero.back_link %}
+        <a class="community-story__back" href="{{ module.hero.back_link|escape_url }}">&#8592; Community stories</a>
+      {% endif %}
+      <p class="community-story__eyebrow">{{ module.hero.category|escape_html }}</p>
+      <h1 class="community-story__title">{{ module.hero.title|escape_html }}</h1>
+      <p class="community-story__standfirst">{{ module.hero.standfirst|escape_html }}</p>
+      {% if module.hero.community or module.hero.location or module.hero.published %}
+        <ul class="community-story__metadata" aria-label="Story details">
+          {% if module.hero.community %}<li>{{ module.hero.community|escape_html }}</li>{% endif %}
+          {% if module.hero.location %}<li>{{ module.hero.location|escape_html }}</li>{% endif %}
+          {% if module.hero.published %}
+            <li><time datetime="{{ module.hero.published|datetimeformat('%Y-%m-%d', 'UTC')|escape_attr }}">{{ module.hero.published|datetimeformat('%e %B %Y', 'UTC')|escape_html }}</time></li>
+          {% endif %}
+        </ul>
+      {% endif %}
+    </div>
+    {% if module.hero.image.src %}
+      <figure class="community-story__hero">
+        <img src="{{ module.hero.image.src|escape_url }}" alt="{{ module.hero.image.alt|escape_attr }}" width="{{ module.hero.image.width|escape_attr }}" height="{{ module.hero.image.height|escape_attr }}" fetchpriority="high">
+        {% if module.hero.caption %}<figcaption>{{ module.hero.caption|escape_html }}</figcaption>{% endif %}
+      </figure>
+    {% elif is_in_editor %}
+      <div class="community-story__photo-prompt">Add a consented community photograph to complete the story opening.</div>
+    {% endif %}
+  </header>
+
+  <div class="community-story__introduction community-story__prose">
+    {{ module.introduction|sanitize_html }}
+  </div>
+
+  <div class="community-story__chapters community-story__shell">
+    {% for chapter in module.chapters %}
+      <section class="community-story__chapter community-story__chapter--{{ chapter.layout|escape_attr }}{% if not chapter.image.src %} community-story__chapter--text-only{% endif %}">
+        <div class="community-story__chapter-copy community-story__prose">
+          <h2>{{ chapter.title|escape_html }}</h2>
+          {{ chapter.content|sanitize_html }}
+        </div>
+        {% if chapter.image.src %}
+          <figure class="community-story__chapter-photo">
+            <img src="{{ chapter.image.src|escape_url }}" alt="{{ chapter.image.alt|escape_attr }}" width="{{ chapter.image.width|escape_attr }}" height="{{ chapter.image.height|escape_attr }}" loading="lazy">
+            {% if chapter.caption %}<figcaption>{{ chapter.caption|escape_html }}</figcaption>{% endif %}
+          </figure>
+        {% endif %}
+        {% if chapter.quote %}
+          <figure class="community-story__quote">
+            <blockquote><p>{{ chapter.quote|escape_html }}</p></blockquote>
+            {% if chapter.attribution %}<figcaption>{{ chapter.attribution|escape_html }}</figcaption>{% endif %}
+          </figure>
+        {% endif %}
+      </section>
+    {% endfor %}
+  </div>
+
+  {% set related_stories = module.related|selectattr("url")|selectattr("title")|list %}
+  {% if related_stories %}
+    <section class="community-story__related community-story__shell">
+      <h2>{{ module.related_title|escape_html }}</h2>
+      <div class="community-story__cards">
+        {% for story in related_stories %}
+          <a class="community-story__card" href="{{ story.url|escape_url }}">
+            {% if story.image.src %}
+              <img src="{{ story.image.src|escape_url }}" alt="{{ story.image.alt|escape_attr }}" width="{{ story.image.width|escape_attr }}" height="{{ story.image.height|escape_attr }}" loading="lazy">
+            {% endif %}
+            {% if story.category %}<p class="community-story__eyebrow">{{ story.category|escape_html }}</p>{% endif %}
+            <h3>{{ story.title|escape_html }} <span aria-hidden="true">&#8599;</span></h3>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if module.closing.url %}
+    <aside class="community-story__closing community-story__shell">
+      <div>
+        <h2>{{ module.closing.heading|escape_html }}</h2>
+        <p>{{ module.closing.text|escape_html }}</p>
+      </div>
+      <a class="community-story__button" href="{{ module.closing.url|escape_url }}">{{ module.closing.button_text|escape_html }} <span aria-hidden="true">&#8594;</span></a>
+    </aside>
+  {% endif %}
+</article>

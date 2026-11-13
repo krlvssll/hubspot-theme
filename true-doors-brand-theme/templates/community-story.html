@@ -1,0 +1,46 @@
+<!--
+  templateType: page
+  isAvailableForNewContent: true
+  label: Community story
+-->
+{% extends "./layouts/base.html" %}
+
+{% block header %}
+  {{ require_css(get_asset_url("../css/templates/community-story.css")) }}
+  <header class="story-site-header">
+    <a class="story-site-header__skip" href="#main-content">Skip to content</a>
+    <div class="story-site-header__inner">
+      <a class="story-site-header__brand" href="/">true doors</a>
+      <nav aria-label="Community story navigation">
+        {% module "story_navigation"
+          path="@hubspot/simple_menu",
+          label="Story navigation",
+          orientation="horizontal",
+          menu_tree=[{"linkLabel": "Explore our doors", "linkUrl": "https://my.truedoors.com/collection/", "isPublished": true}]
+        %}
+      </nav>
+    </div>
+  </header>
+{% endblock header %}
+
+{% block footer %}
+  <footer class="story-site-footer">
+    <a href="/" class="story-site-header__brand">true doors</a>
+    <p>Familiarity. Individuality. Belonging.</p>
+  </footer>
+{% endblock footer %}
+
+{% block body %}
+  {% dnd_area "community_story"
+    label="Community story",
+    class="body-container body-container--community-story"
+  %}
+    {% dnd_section
+      full_width=true,
+      padding={"top": 0, "right": 0, "bottom": 0, "left": 0}
+    %}
+      {% dnd_module path="../modules/community-story", label="Story content" %}
+      {% end_dnd_module %}
+    {% end_dnd_section %}
+  {% end_dnd_area %}
+{% endblock body %}

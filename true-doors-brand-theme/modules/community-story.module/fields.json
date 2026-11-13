@@ -1,0 +1,80 @@
+[
+  {
+    "name": "hero",
+    "label": "Story opening",
+    "type": "group",
+    "children": [
+      {"name": "category", "label": "Category", "type": "text", "default": "Community stories"},
+      {"name": "title", "label": "Story title", "type": "text", "default": "A familiar door. A personal place."},
+      {"name": "standfirst", "label": "Short introduction", "type": "text", "default": "Every community has a story. Share how people, familiar places and personal choices shaped yours."},
+      {"name": "image", "label": "Opening photograph", "type": "image", "responsive": true, "resizable": false, "show_loading": false},
+      {"name": "caption", "label": "Photo caption and credit", "type": "text"},
+      {"name": "community", "label": "Community name", "type": "text"},
+      {"name": "location", "label": "Location", "type": "text"},
+      {"name": "published", "label": "Publication date", "type": "date"},
+      {"name": "back_link", "label": "Community stories listing URL", "type": "url"}
+    ]
+  },
+  {
+    "name": "introduction",
+    "label": "Story introduction",
+    "type": "richtext",
+    "default": "<p>Start with the people who call this community home. What matters to them? What feels familiar? Use their own experiences, with permission, to introduce the story.</p>"
+  },
+  {
+    "name": "chapters",
+    "label": "Story chapters",
+    "type": "group",
+    "occurrence": {"min": 1, "max": 12, "default": 3, "sorting_label_field": "chapters.title"},
+    "children": [
+      {"name": "title", "label": "Chapter heading", "type": "text"},
+      {"name": "content", "label": "Chapter text", "type": "richtext"},
+      {
+        "name": "layout",
+        "label": "Photo layout",
+        "type": "choice",
+        "display": "select",
+        "choices": [["image_right", "Text left, photo right"], ["image_left", "Photo left, text right"], ["wide", "Wide photograph, text below"]],
+        "default": "image_right"
+      },
+      {"name": "image", "label": "Chapter photograph", "type": "image", "responsive": true, "resizable": false, "show_loading": false},
+      {"name": "caption", "label": "Photo caption and credit", "type": "text"},
+      {"name": "quote", "label": "Optional first-hand quote", "type": "text"},
+      {"name": "attribution", "label": "Quote attribution (with permission)", "type": "text"}
+    ],
+    "default": [
+      {"title": "Start with the person.", "layout": "image_right", "content": "<p>Describe how residents and the people close to them helped choose their door designs. Share personal preferences rather than assumptions.</p>"},
+      {"title": "Making room for individuality.", "layout": "image_left", "content": "<p>Show the details that make each door distinctive. Explain the choices made with this community, alongside photographs of the installed decals.</p>"},
+      {"title": "Part of everyday life.", "layout": "wide", "content": "<p>Describe life in the community after installation. Include only observations and outcomes you can substantiate, and distinguish individual experiences from clinical evidence.</p>"}
+    ]
+  },
+  {
+    "name": "related_title",
+    "label": "Related stories heading",
+    "type": "text",
+    "default": "More life behind the doors."
+  },
+  {
+    "name": "related",
+    "label": "Related stories",
+    "type": "group",
+    "occurrence": {"min": 0, "max": 3, "default": 0, "sorting_label_field": "related.title"},
+    "children": [
+      {"name": "title", "label": "Story title", "type": "text"},
+      {"name": "category", "label": "Category", "type": "text"},
+      {"name": "image", "label": "Photograph", "type": "image", "responsive": true, "resizable": false, "show_loading": false},
+      {"name": "url", "label": "Story URL", "type": "url"}
+    ]
+  },
+  {
+    "name": "closing",
+    "label": "Closing invitation",
+    "type": "group",
+    "children": [
+      {"name": "heading", "label": "Heading", "type": "text", "default": "What could feel like home in your community?"},
+      {"name": "text", "label": "Supporting text", "type": "text", "default": "Let's start with the people who live there."},
+      {"name": "button_text", "label": "Link label", "type": "text", "default": "Talk to us"},
+      {"name": "url", "label": "Contact page URL (enables closing invitation)", "type": "url"}
+    ]
+  }
+]
