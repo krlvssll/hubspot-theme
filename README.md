@@ -102,7 +102,7 @@ the configured HubSpot portal, without either one affecting the other.
 
 `true-doors-brand-theme/templates/community-story.html` is an individual
 community-story page template, not a stories listing or a HubDB dynamic page.
-It uses the brand theme's existing global header/footer and a reusable
+It uses a template-specific quiet header/footer and a reusable
 `community-story` module inside a drag-and-drop area.
 
 The layout pairs a large story heading and standfirst with a wide opening
@@ -111,6 +111,12 @@ optional first-hand quotes, related-story cards, and a closing invitation.
 The visual direction is photography-led, with quiet sans-serif typography,
 white space, and restrained teal accents. Styles are scoped to the module
 and do not restyle other brand-theme pages.
+
+Template-level CSS also styles standard heading, rich-text and image
+modules retained by HubSpot when an existing page switches templates.
+It does not migrate or remove content, reveal hidden sections, or change
+shared global headers. Edit **Story navigation** to configure this page's
+navigation links.
 
 In HubSpot, create a page using **Community story**, then edit **Story
 content**. Add community details, a publication date, and photographs with

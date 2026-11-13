@@ -1,0 +1,155 @@
+/* Template styling also covers content retained when switching templates. */
+.story-site-header,
+.story-site-footer,
+.body-container--community-story {
+  color: #243943;
+  background: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.story-site-header__inner,
+.story-site-footer {
+  max-width: 1200px;
+  margin: auto;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.story-site-header {
+  border-bottom: 1px solid #e5ecee;
+}
+
+.story-site-header .story-site-header__brand,
+.story-site-footer .story-site-header__brand {
+  font: 400 30px/1.2 Arial, Helvetica, sans-serif;
+  letter-spacing: -1px;
+  color: #243943;
+  text-decoration: none;
+}
+
+.story-site-header nav ul {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.story-site-header nav a {
+  color: #3e6970;
+  font-size: 16px;
+}
+
+.story-site-header a:focus-visible,
+.story-site-footer a:focus-visible,
+.body-container--community-story a:focus-visible {
+  outline: 3px solid #3e6970;
+  outline-offset: 4px;
+}
+
+.story-site-header__skip {
+  position: absolute;
+  left: 16px;
+  top: -100px;
+}
+
+.story-site-header__skip:focus {
+  top: 16px;
+  background: #fff;
+  padding: 12px;
+  z-index: 10;
+}
+
+.story-site-footer {
+  border-top: 1px solid #e5ecee;
+  margin-top: 48px;
+}
+
+.story-site-footer p {
+  color: #53656c;
+  font-size: 14px;
+  margin: 0;
+}
+
+.body-container--community-story {
+  --story-ink: #243943;
+}
+
+.body-container--community-story > .row-fluid-wrapper > .row-fluid > .widget-span > .dnd-section {
+  padding: clamp(24px, 5vw, 64px) 24px;
+}
+
+.body-container--community-story .dnd-section > .row-fluid {
+  max-width: 1200px;
+}
+
+.body-container--community-story .widget-type-section_header {
+  max-width: 1100px;
+  margin-inline: auto;
+}
+
+.body-container--community-story .section-header,
+.body-container--community-story .page-header {
+  border: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.body-container--community-story .section-header h1 {
+  font: 400 clamp(40px, 5.5vw, 76px)/1.12 Arial, Helvetica, sans-serif;
+  letter-spacing: -0.04em;
+  color: #243943;
+  margin: 0 0 24px;
+  text-transform: none;
+  overflow-wrap: anywhere;
+}
+
+.body-container--community-story .secondary-header,
+.body-container--community-story .section-subheader {
+  color: #53656c;
+  font: 400 clamp(19px, 2vw, 24px)/1.55 Arial, Helvetica, sans-serif;
+}
+
+.body-container--community-story .widget-type-rich_text {
+  max-width: 720px;
+  margin-inline: auto;
+  color: #243943;
+  font: 400 19px/1.7 Arial, Helvetica, sans-serif;
+  overflow-wrap: anywhere;
+}
+
+.body-container--community-story .widget-type-rich_text h2,
+.body-container--community-story .widget-type-rich_text h3 {
+  color: #243943;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.body-container--community-story .widget-type-linked_image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+.body-container--community-story .widget-type-rich_text a {
+  color: #3e6970;
+  text-decoration: underline;
+}
+
+@media (max-width: 767px) {
+  .story-site-header__inner,
+  .story-site-footer {
+    padding: 20px;
+  }
+
+  .body-container--community-story > .row-fluid-wrapper > .row-fluid > .widget-span > .dnd-section {
+    padding-inline: 16px;
+  }
+}
