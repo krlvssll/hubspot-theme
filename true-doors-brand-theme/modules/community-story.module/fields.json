@@ -28,7 +28,7 @@
     "occurrence": {"min": 1, "max": 12, "default": 3, "sorting_label_field": "chapters.title"},
     "children": [
       {"name": "title", "label": "Chapter heading", "type": "text"},
-      {"name": "body", "label": "Chapter text", "type": "richtext"},
+      {"name": "content", "label": "Chapter text", "type": "richtext"},
       {
         "name": "layout",
         "label": "Photo layout",
@@ -43,9 +43,9 @@
       {"name": "attribution", "label": "Quote attribution (with permission)", "type": "text"}
     ],
     "default": [
-      {"title": "Start with the person.", "layout": "image_right", "body": "<p>Describe how residents and the people close to them helped choose their door designs. Share personal preferences rather than assumptions.</p>"},
-      {"title": "Making room for individuality.", "layout": "image_left", "body": "<p>Show the details that make each door distinctive. Explain the choices made with this community, alongside photographs of the installed decals.</p>"},
-      {"title": "Part of everyday life.", "layout": "wide", "body": "<p>Describe life in the community after installation. Include only observations and outcomes you can substantiate, and distinguish individual experiences from clinical evidence.</p>"}
+      {"title": "Start with the person.", "layout": "image_right", "content": "<p>Describe how residents and the people close to them helped choose their door designs. Share personal preferences rather than assumptions.</p>"},
+      {"title": "Making room for individuality.", "layout": "image_left", "content": "<p>Show the details that make each door distinctive. Explain the choices made with this community, alongside photographs of the installed decals.</p>"},
+      {"title": "Part of everyday life.", "layout": "wide", "content": "<p>Describe life in the community after installation. Include only observations and outcomes you can substantiate, and distinguish individual experiences from clinical evidence.</p>"}
     ]
   },
   {
