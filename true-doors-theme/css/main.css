@@ -20,3 +20,15 @@
   margin: 0.25rem 0 0;
   padding-left: 1.25rem;
 }
+
+.project-detail {
+  max-width: 720px;
+}
+
+.project-back-link {
+  margin-top: 1.5rem;
+}
+
+.project-back-link a {
+  text-decoration: none;
+}

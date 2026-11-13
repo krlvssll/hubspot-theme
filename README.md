@@ -10,7 +10,7 @@ true-doors-theme/
 ├── theme.json          # Theme configuration (label, screenshot, settings)
 ├── templates/
 │   ├── home.html         # Home page template
-│   └── projects.html      # Projects listing page template (HubDB-backed)
+│   └── projects.html      # Projects listing + detail template (HubDB dynamic pages)
 ├── css/
 │   └── main.css          # Theme stylesheet
 └── js/
@@ -52,19 +52,37 @@ Before the workflow will succeed, configure the following in this repository
 Once these are set, every push to `main` will automatically deploy
 `true-doors-theme/` to the configured HubSpot portal.
 
-## HubDB-backed Projects page
+## HubDB-backed Projects listing + detail pages
 
-The `true-doors-theme/templates/projects.html` template renders a list of
-projects from a HubDB table named `projects`, which is set up by
-[`scripts/setup_hubdb.js`](./scripts/setup_hubdb.js). That script is
-idempotent (it checks for an existing table by name before creating one) and
-sets up three related HubDB tables:
+The `true-doors-theme/templates/projects.html` template renders both a
+listing of all projects and a detail page per project, using HubSpot's
+native [HubDB dynamic pages](https://developers.hubspot.com/docs/cms/start-building/features/data-driven-content/hubdb/overview)
+feature: one page/template pair serves the listing at its own URL (e.g.
+`/projects`) and auto-generates one detail page per published row at
+`/projects/<row's Page path>`. In the template, this is done by branching on
+the `dynamic_page_hubdb_row` HubL variable — when it's set, the template
+renders a single project's full detail view; otherwise it renders the
+listing grid, with each card linking to that row's detail URL.
+
+This is set up by [`scripts/setup_hubdb.js`](./scripts/setup_hubdb.js). That
+script is idempotent (it checks for an existing table/page before creating
+one, and patches existing ones to add any missing configuration) and sets up
+three related HubDB tables:
 
 | Table | Purpose | Columns |
 | --- | --- | --- |
 | `companies` | Companies associated with a project | `name` (TEXT), `website` (TEXT) |
 | `products` | Products that can be attached to a project | `name` (TEXT), `sku` (TEXT), `description` (TEXT) |
 | `projects` | The projects shown on the Projects page | `project_name` (TEXT), `location_name` (TEXT), `city` (TEXT), `region` (TEXT), `country` (TEXT), `status` (SELECT: "In Progress" / "Completed"), `start_date` (DATE), `description` (RICHTEXT), `company` (FOREIGN_ID -> `companies`), `products` (FOREIGN_ID -> `products`) |
+
+The `projects` table is created (and, for pre-existing tables, patched) with
+`useForPages: true`, which enables HubDB dynamic pages for it. Once that's
+on, HubSpot automatically adds built-in **Page title** (`hs_name`) and
+**Page path** (`hs_path`) fields to every row — set these per project when
+adding/editing rows in HubDB so each project gets a sensible URL and title.
+The Projects page is created (or, if it already exists, patched) with its
+`dynamicPageHubDbTableId` pointed at the `projects` table so this linkage
+also works for pages created before this feature existed.
 
 ### Running the HubDB setup
 
