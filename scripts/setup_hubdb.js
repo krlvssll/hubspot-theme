@@ -83,6 +83,17 @@ async function createTable(token, definition) {
   return hubspotRequest(token, "POST", "/cms/v3/hubdb/tables", definition);
 }
 
+// Partially updates a table's draft version (e.g. to flip useForPages on).
+// Callers must publish afterwards for the change to take effect live.
+async function updateTableDraft(token, tableIdOrName, patch) {
+  return hubspotRequest(
+    token,
+    "PATCH",
+    `/cms/v3/hubdb/tables/${tableIdOrName}/draft`,
+    patch
+  );
+}
+
 async function publishTable(token, tableIdOrName) {
   return hubspotRequest(
     token,
@@ -95,12 +106,25 @@ function textColumn(name, label) {
   return { name, label: label || name, type: "TEXT" };
 }
 
-// Ensures a table exists, creating + publishing it if necessary.
+// Ensures a table exists, creating + publishing it if necessary. If the
+// definition specifies `useForPages: true` but an already-existing table
+// doesn't have it set yet, this patches the draft and republishes so the
+// setting applies idempotently regardless of whether the table is new or
+// pre-existing.
 // Returns the (published) table object either way.
 async function ensureTable(token, definition) {
   const existing = await findTableByName(token, definition.name);
   if (existing) {
     console.log(`Table "${definition.name}" already exists (id: ${existing.id}). Skipping creation.`);
+
+    if (definition.useForPages && !existing.useForPages) {
+      console.log(`Enabling dynamic pages on existing table "${definition.name}"...`);
+      await updateTableDraft(token, existing.id, { useForPages: true });
+      await publishTable(token, existing.id);
+      existing.useForPages = true;
+      console.log(`Enabled and published dynamic pages for table "${definition.name}".`);
+    }
+
     return existing;
   }
 
@@ -149,6 +173,11 @@ async function main() {
   const projectsTable = await ensureTable(token, {
     name: "projects",
     label: "Projects",
+    // Enables HubSpot's native HubDB dynamic pages: the Projects page (see
+    // ensureProjectsPage below) renders the listing at its own URL and one
+    // detail page per row at "<page-url>/<row's Page path>", using the
+    // built-in hs_path/hs_name row fields HubSpot adds once this is on.
+    useForPages: true,
     columns: [
       textColumn("project_name", "Project Name"),
       textColumn("location_name", "Location Name"),
@@ -188,7 +217,7 @@ async function main() {
   console.log(`  products  -> id ${productsTable.id}`);
   console.log(`  projects  -> id ${projectsTable.id}`);
 
-  await ensureProjectsPage(token);
+  await ensureProjectsPage(token, projectsTable.id);
 }
 
 // Finds an existing site page by slug, using the Pages API (requires the
@@ -203,15 +232,27 @@ async function findPageBySlug(token, slug) {
 }
 
 // Creates (or reuses) a live "Projects" page built from the projects.html
-// template. This step needs the `content` scope in addition to `hubdb`; if
-// that scope is missing, the failure is logged clearly but does not fail the
-// whole script, since the HubDB tables above are the more critical piece.
-async function ensureProjectsPage(token) {
+// template, linked to the `projects` HubDB table as its dynamic page data
+// source. HubSpot then renders the listing at this page's own URL and
+// generates one detail page per published row at "<page-url>/<row-path>".
+// This step needs the `content` scope in addition to `hubdb`; if that scope
+// is missing, the failure is logged clearly but does not fail the whole
+// script, since the HubDB tables above are the more critical piece.
+async function ensureProjectsPage(token, projectsTableId) {
   const slug = "projects";
   try {
     const existing = await findPageBySlug(token, slug);
     if (existing) {
       console.log(`\nPage with slug "${slug}" already exists (id: ${existing.id}, url: ${existing.url}). Skipping creation.`);
+
+      if (existing.dynamicPageHubDbTableId !== projectsTableId) {
+        console.log(`Linking existing "Projects" page (id: ${existing.id}) to the projects HubDB table...`);
+        await hubspotRequest(token, "PATCH", `/cms/v3/pages/site-pages/${existing.id}`, {
+          dynamicPageHubDbTableId: projectsTableId,
+        });
+        console.log(`Linked "Projects" page (id: ${existing.id}) to HubDB table ${projectsTableId}.`);
+      }
+
       return;
     }
 
@@ -221,8 +262,9 @@ async function ensureProjectsPage(token) {
       templatePath: "true-doors-theme/templates/projects.html",
       subcategory: "site_page",
       state: "PUBLISHED",
+      dynamicPageHubDbTableId: projectsTableId,
     });
-    console.log(`\nCreated and published "Projects" page (id: ${created.id}, url: ${created.url}).`);
+    console.log(`\nCreated and published "Projects" page (id: ${created.id}, url: ${created.url}), linked to HubDB table ${projectsTableId}.`);
   } catch (err) {
     if (err.status === 403) {
       console.error(

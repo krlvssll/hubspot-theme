@@ -11,55 +11,77 @@ label: Projects
   <link rel="stylesheet" href="{{ get_asset_url('../css/main.css') }}">
 </head>
 <body class="{{ body_classes }}">
-  <header>
-    <h1>Projects</h1>
-  </header>
-  <main>
-    <div class="projects-list">
-      {% for row in hubdb_table_rows("projects", "") %}
-        <article class="project-card">
-          <h2>{{ row.project_name }}</h2>
+  {% macro project_meta(row) %}
+    <p class="project-location">
+      {{ row.location_name }} —
+      {% if row.city %}{{ row.city }}, {% endif %}
+      {% if row.region %}{{ row.region }}, {% endif %}
+      {{ row.country }}
+    </p>
 
-          <p class="project-location">
-            {{ row.location_name }} —
-            {% if row.city %}{{ row.city }}, {% endif %}
-            {% if row.region %}{{ row.region }}, {% endif %}
-            {{ row.country }}
-          </p>
+    <p class="project-status">Status: {{ row.status }}</p>
 
-          <p class="project-status">Status: {{ row.status }}</p>
+    {% if row.start_date %}
+      <p class="project-start-date">Start date: {{ row.start_date|datetimeformat("%B %-d, %Y") }}</p>
+    {% endif %}
 
-          {% if row.start_date %}
-            <p class="project-start-date">Start date: {{ row.start_date|datetimeformat("%B %-d, %Y") }}</p>
-          {% endif %}
+    {% if row.company %}
+      <p class="project-company">
+        Company:
+        {% for c in row.company %}{{ c.name }}{% if not loop.last %}, {% endif %}{% endfor %}
+      </p>
+    {% endif %}
 
-          {% if row.description %}
-            <div class="project-description">{{ row.description }}</div>
-          {% endif %}
+    {% if row.products %}
+      <div class="project-products">
+        Products:
+        <ul>
+          {% for p in row.products %}
+            <li>{{ p.name }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  {% endmacro %}
 
-          {% if row.company %}
-            <p class="project-company">
-              Company:
-              {% for c in row.company %}{{ c.name }}{% if not loop.last %}, {% endif %}{% endfor %}
-            </p>
-          {% endif %}
+  {% if dynamic_page_hubdb_row %}
+    {% set row = dynamic_page_hubdb_row %}
+    <header>
+      <h1>{{ row.project_name }}</h1>
+    </header>
+    <main>
+      <article class="project-detail">
+        {{ project_meta(row) }}
 
-          {% if row.products %}
-            <div class="project-products">
-              Products:
-              <ul>
-                {% for p in row.products %}
-                  <li>{{ p.name }}</li>
-                {% endfor %}
-              </ul>
-            </div>
-          {% endif %}
-        </article>
-      {% else %}
-        <p>No projects yet.</p>
-      {% endfor %}
-    </div>
-  </main>
+        {% if row.description %}
+          <div class="project-description">{{ row.description }}</div>
+        {% endif %}
+
+        <p class="project-back-link"><a href="..">&larr; Back to all projects</a></p>
+      </article>
+    </main>
+  {% else %}
+    <header>
+      <h1>Projects</h1>
+    </header>
+    <main>
+      <div class="projects-list">
+        {% for row in hubdb_table_rows("projects", "") %}
+          <article class="project-card">
+            <h2><a href="{{ request.path }}/{{ row.hs_path }}">{{ row.project_name }}</a></h2>
+
+            {{ project_meta(row) }}
+
+            {% if row.description %}
+              <div class="project-description">{{ row.description }}</div>
+            {% endif %}
+          </article>
+        {% else %}
+          <p>No projects yet.</p>
+        {% endfor %}
+      </div>
+    </main>
+  {% endif %}
   <script src="{{ get_asset_url('../js/main.js') }}"></script>
   {{ standard_footer_includes }}
 </body>
