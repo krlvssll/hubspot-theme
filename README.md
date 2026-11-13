@@ -181,6 +181,9 @@ uses the quiet community-story header/footer, charcoal typography, teal
 controls, and responsive press cards. It reads the existing `press` table
 without modifying its data or changing the original theme's `/press` page.
 No photography is fabricated: the existing table has no image column.
+The introduction is an editable drag-and-drop area, so the template also
+supports switching from existing drag-and-drop pages. The HubDB listing
+and detail markup remain data-driven rather than manually editable cards.
 
 Create a separate page in **True Doors — Brand Redesign** with this
 template. For on-site detail pages, enable HubDB dynamic pages and select
