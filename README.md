@@ -98,6 +98,38 @@ Once these are set, every push to `main` will automatically deploy both
 `true-doors-theme/` and `true-doors-brand-theme/` to their own locations in
 the configured HubSpot portal, without either one affecting the other.
 
+## Community story template (brand theme)
+
+`true-doors-brand-theme/templates/community-story.html` is an individual
+community-story page template, not a stories listing or a HubDB dynamic page.
+It uses the brand theme's existing global header/footer and a reusable
+`community-story` module inside a drag-and-drop area.
+
+The layout pairs a large story heading and standfirst with a wide opening
+photograph, a narrow reading column, alternating photo/text chapters,
+optional first-hand quotes, related-story cards, and a closing invitation.
+The visual direction is photography-led, with quiet sans-serif typography,
+white space, and restrained teal accents. Styles are scoped to the module
+and do not restyle other brand-theme pages.
+
+In HubSpot, create a page using **Community story**, then edit **Story
+content**. Add community details, a publication date, and photographs with
+descriptive alt text and captions/credits. Reorder or duplicate chapters
+and choose left, right, or wide photo layouts. Related cards appear only
+when both a title and URL are supplied; the closing invitation appears
+only after a contact URL is supplied. Configure the stories-listing URL
+rather than assuming a particular site route.
+
+Defaults are editorial prompts, not published customer accounts. Replace
+them before publishing. Use permissioned photography and quotes, respect
+resident privacy, and substantiate any reported outcomes. No stock
+boilerplate or generated imagery is presented as community photography.
+Missing photos are omitted on published pages; the opening-photo reminder
+is shown only in the HubSpot editor.
+
+This addition does not deploy itself, create pages, modify the shared HubDB
+tables, or change `true-doors-theme/`.
+
 ## HubDB-backed Projects page
 
 The `true-doors-theme/templates/projects.html` template renders a list of
