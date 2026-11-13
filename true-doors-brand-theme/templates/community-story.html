@@ -1,0 +1,21 @@
+<!--
+  templateType: page
+  isAvailableForNewContent: true
+  label: Community story
+-->
+{% extends "./layouts/base.html" %}
+
+{% block body %}
+  {% dnd_area "community_story"
+    label="Community story",
+    class="body-container body-container--community-story"
+  %}
+    {% dnd_section
+      full_width=true,
+      padding={"top": 0, "right": 0, "bottom": 0, "left": 0}
+    %}
+      {% dnd_module path="../modules/community-story", label="Story content" %}
+      {% end_dnd_module %}
+    {% end_dnd_section %}
+  {% end_dnd_area %}
+{% endblock body %}
