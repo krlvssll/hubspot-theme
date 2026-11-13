@@ -36,7 +36,7 @@
       <section class="community-story__chapter community-story__chapter--{{ chapter.layout|escape_attr }}{% if not chapter.image.src %} community-story__chapter--text-only{% endif %}">
         <div class="community-story__chapter-copy community-story__prose">
           <h2>{{ chapter.title|escape_html }}</h2>
-          {{ chapter.body|sanitize_html }}
+          {{ chapter.content|sanitize_html }}
         </div>
         {% if chapter.image.src %}
           <figure class="community-story__chapter-photo">
