@@ -1,0 +1,55 @@
+<!--
+templateType: page
+isAvailableForNewContent: true
+label: Home
+-->
+<!doctype html>
+<html>
+<head>
+  {{ standard_header_includes }}
+  <title>{{ page_meta.html_title }}</title>
+  <link rel="stylesheet" href="{{ get_asset_url('../css/main.css') }}">
+</head>
+<body class="{{ body_classes }}">
+  <header class="td-header">
+    <div class="td-container td-header__bar">
+      <a class="td-logo" href="/">True <span>Doors</span></a>
+      <button class="td-nav-toggle" type="button" data-td-nav-toggle aria-expanded="false" aria-controls="td-primary-nav" aria-label="Toggle navigation">
+        <span class="hs-screen-reader-text">Menu</span>
+      </button>
+      <nav class="td-nav" id="td-primary-nav" data-td-nav>
+        <a href="/" class="is-active">Home</a>
+        <a href="/projects">Projects</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <section class="td-hero">
+      <div class="td-container">
+        <p class="td-hero__eyebrow">Door decals for care facilities</p>
+        <h1 class="td-hero__title">Transform impersonal hallways into neighbourhoods with homes</h1>
+        <p class="td-hero__subtitle">
+          Help residents recognise and find their doors, increase privacy and
+          a sense of safety, and spark reminiscence and social interaction —
+          one beautiful door at a time.
+        </p>
+        <a class="td-button" href="/projects">See our projects</a>
+      </div>
+    </section>
+    <div class="td-container td-main">
+      {{ content.post_body }}
+    </div>
+  </main>
+  <footer class="td-footer">
+    <div class="td-container td-footer__bar">
+      <p>&copy; True Doors. All rights reserved.</p>
+      <nav class="td-footer__nav">
+        <a href="/">Home</a>
+        <a href="/projects">Projects</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="{{ get_asset_url('../js/main.js') }}"></script>
+  {{ standard_footer_includes }}
+</body>
+</html>

@@ -1,12 +1,23 @@
 # True Doors Theme
 
-This repository holds the **True Doors** HubSpot CMS theme, scaffolded under
-[`true-doors-theme/`](./true-doors-theme).
+This repository holds two separate HubSpot CMS themes:
+
+- [`true-doors-theme/`](./true-doors-theme) — the original, **live** theme.
+  It is untouched by the brand redesign below and keeps deploying to its
+  own `true-doors-theme` location in HubSpot, running the live site exactly
+  as before.
+- [`true-doors-brand-theme/`](./true-doors-brand-theme) — a **brand new,
+  separate** theme with a True Doors brand-inspired redesign (header/nav,
+  hero section, footer, polished project cards). It deploys to its own
+  `true-doors-brand-theme` location in HubSpot under a distinct label,
+  `True Doors — Brand Redesign`, so it does **not** overwrite or affect the
+  live `true-doors-theme`. You can preview/assign it to pages independently
+  in HubSpot's theme picker before deciding to adopt it for the live site.
 
 ## Structure
 
 ```
-true-doors-theme/
+true-doors-theme/            # Original, live theme — untouched
 ├── theme.json          # Theme configuration (label, screenshot, settings)
 ├── templates/
 │   ├── home.html         # Home page template
@@ -16,6 +27,16 @@ true-doors-theme/
 │   └── main.css          # Theme stylesheet
 └── js/
     └── main.js            # Theme JavaScript
+
+true-doors-brand-theme/      # New, separate brand-redesign theme
+├── theme.json
+├── templates/
+│   ├── home.html
+│   └── projects.html
+├── css/
+│   └── main.css
+└── js/
+    └── main.js
 
 scripts/
 ├── setup_hubdb.js              # One-time, idempotent HubDB table setup script
@@ -36,15 +57,22 @@ for full details.
 
 ## CI/CD: automatic deploy on push to `main`
 
-This repo includes a GitHub Actions workflow at
-[`.github/workflows/hubspot-deploy.yml`](./.github/workflows/hubspot-deploy.yml)
-that automatically deploys the `true-doors-theme/` folder to HubSpot CMS
-using [`HubSpot/hubspot-cms-deploy-action@v2.0.1`](https://github.com/HubSpot/hubspot-cms-deploy-action)
+This repo includes two independent GitHub Actions workflows, each deploying
+its theme folder to its own, distinct location in HubSpot so the two themes
+never overwrite each other:
+
+- [`.github/workflows/hubspot-deploy.yml`](./.github/workflows/hubspot-deploy.yml)
+  deploys `true-doors-theme/` → `true-doors-theme` in HubSpot (the live theme).
+- [`.github/workflows/hubspot-deploy-brand-theme.yml`](./.github/workflows/hubspot-deploy-brand-theme.yml)
+  deploys `true-doors-brand-theme/` → `true-doors-brand-theme` in HubSpot
+  (the new brand-redesign theme).
+
+Both use [`HubSpot/hubspot-cms-deploy-action@v2.0.1`](https://github.com/HubSpot/hubspot-cms-deploy-action)
 on every push to the `main` branch.
 
 ### Required repository configuration
 
-Before the workflow will succeed, configure the following in this repository
+Before the workflows will succeed, configure the following in this repository
 (Settings -> Secrets and variables -> Actions):
 
 | Name | Type | Description |
@@ -52,8 +80,9 @@ Before the workflow will succeed, configure the following in this repository
 | `hubspot_personal_access_key` | Repository **secret** | A HubSpot Personal Access Key / Private App token with CMS access for the target portal. |
 | `hubspot_account_id` | Repository **variable** (or `hubspot_portal_id` as a **secret**) | The numeric HubSpot portal/account ID to deploy to. |
 
-Once these are set, every push to `main` will automatically deploy
-`true-doors-theme/` to the configured HubSpot portal.
+Once these are set, every push to `main` will automatically deploy both
+`true-doors-theme/` and `true-doors-brand-theme/` to their own locations in
+the configured HubSpot portal, without either one affecting the other.
 
 ## HubDB-backed Projects page
 
