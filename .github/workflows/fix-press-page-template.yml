@@ -15,7 +15,8 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Run fix script
+      - name: Inspect companies table schema
         env:
           HUBSPOT_PAT: ${{ secrets.hubspot_private_app_token }}
-        run: node scripts/fix_press_page_template.js
+        run: |
+          node -e 'fetch("https://api.hubapi.com/cms/v3/hubdb/tables/483210623", {headers: {Authorization: `Bearer ${process.env.HUBSPOT_PAT}`}}).then(async response => { const data = await response.json(); if (!response.ok) { console.error("Schema request failed:", response.status, data.message); process.exitCode = 1; return; } console.log(JSON.stringify({name: data.name, label: data.label, columns: data.columns.map(({name, label, type}) => ({name, label, type}))}, null, 2)); }).catch(error => { console.error(error.message); process.exitCode = 1; })'
