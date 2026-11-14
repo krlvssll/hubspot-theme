@@ -20,8 +20,7 @@
     {% if module.hero.image.src %}
       <figure class="community-story__hero">
         <img src="{{ module.hero.image.src|escape_url }}" alt="{{ module.hero.image.alt|escape_attr }}" width="{{ module.hero.image.width|escape_attr }}" height="{{ module.hero.image.height|escape_attr }}" fetchpriority="high">
-        {% set hero_caption = module.hero.caption|trim or module.hero.image.alt|trim or "Image description not provided." %}
-        {% if hero_caption %}<figcaption>{{ hero_caption|escape_html }}</figcaption>{% endif %}
+        <figcaption>{% if module.hero.caption and module.hero.caption|trim %}{{ module.hero.caption|escape_html }}{% elif module.hero.image.alt and module.hero.image.alt|trim %}{{ module.hero.image.alt|escape_html }}{% else %}Image description not provided.{% endif %}</figcaption>
       </figure>
     {% elif is_in_editor %}
       <div class="community-story__photo-prompt">Add a consented community photograph to complete the story opening.</div>
@@ -42,8 +41,7 @@
         {% if chapter.image.src %}
           <figure class="community-story__chapter-photo">
             <img src="{{ chapter.image.src|escape_url }}" alt="{{ chapter.image.alt|escape_attr }}" width="{{ chapter.image.width|escape_attr }}" height="{{ chapter.image.height|escape_attr }}" loading="lazy">
-            {% set chapter_caption = chapter.caption|trim or chapter.image.alt|trim or "Image description not provided." %}
-            {% if chapter_caption %}<figcaption>{{ chapter_caption|escape_html }}</figcaption>{% endif %}
+            <figcaption>{% if chapter.caption and chapter.caption|trim %}{{ chapter.caption|escape_html }}{% elif chapter.image.alt and chapter.image.alt|trim %}{{ chapter.image.alt|escape_html }}{% else %}Image description not provided.{% endif %}</figcaption>
           </figure>
         {% endif %}
         {% if chapter.quote %}
@@ -66,7 +64,7 @@
             {% if story.image.src %}
               <figure>
                 <img src="{{ story.image.src|escape_url }}" alt="{{ story.image.alt|escape_attr }}" width="{{ story.image.width|escape_attr }}" height="{{ story.image.height|escape_attr }}" loading="lazy">
-                <figcaption>{{ (story.image.alt|trim or "Image description not provided.")|escape_html }}</figcaption>
+                <figcaption>{% if story.image.alt and story.image.alt|trim %}{{ story.image.alt|escape_html }}{% else %}Image description not provided.{% endif %}</figcaption>
               </figure>
             {% endif %}
             {% if story.category %}<p class="community-story__eyebrow">{{ story.category|escape_html }}</p>{% endif %}

@@ -7,7 +7,7 @@
       {% if organization.featured_image.url %}
         <figure class="organization-profile__photo">
           <img src="{{ organization.featured_image.url|escape_url }}" alt="{{ organization.featured_image_alt|default('', true)|escape_attr }}" loading="lazy"{% if organization.featured_image.width and organization.featured_image.height %} width="{{ organization.featured_image.width|escape_attr }}" height="{{ organization.featured_image.height|escape_attr }}"{% endif %}>
-          <figcaption>{{ (organization.featured_image_alt|trim or "Image description not provided.")|escape_html }}</figcaption>
+          <figcaption>{% if organization.featured_image_alt and organization.featured_image_alt|trim %}{{ organization.featured_image_alt|escape_html }}{% else %}Image description not provided.{% endif %}</figcaption>
         </figure>
       {% endif %}
       <div class="organization-profile__content">
