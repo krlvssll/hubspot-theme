@@ -39,17 +39,23 @@ function tableSettings(table) {
   return {
     name: table.name,
     label: table.label,
-    columns: table.columns.map((column) => Object.fromEntries(
-      Object.entries(column).filter(([key]) =>
-        !["createdAt", "updatedAt", "createdBy", "updatedBy", "createdByUserId", "updatedByUserId"].includes(key)
-      )
-    )),
-    useForPages: table.useForPages,
-    allowPublicApiAccess: table.allowPublicApiAccess,
-    allowChildTables: table.allowChildTables,
-    enableChildTablePages: table.enableChildTablePages,
-    dynamicMetaTags: table.dynamicMetaTags,
-    isOrderedManually: table.isOrderedManually,
+    columns: table.columns.map((column) => ({
+      id: String(column.id),
+      name: column.name,
+      label: column.label,
+      type: column.type,
+      options: column.options || [],
+      foreignTableId: column.foreignTableId ?? null,
+      foreignColumnId: column.foreignColumnId ?? null,
+      maxNumberOfCharacters: column.maxNumberOfCharacters ?? null,
+      maxNumberOfOptions: column.maxNumberOfOptions ?? null,
+    })),
+    useForPages: table.useForPages === true,
+    allowPublicApiAccess: table.allowPublicApiAccess === true,
+    allowChildTables: table.allowChildTables === true,
+    enableChildTablePages: table.enableChildTablePages === true,
+    dynamicMetaTags: table.dynamicMetaTags || {},
+    isOrderedManually: table.isOrderedManually === true,
   };
 }
 

@@ -2,7 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { migrate, updatedColumns, PROFILE_COLUMNS } = require("./update_company_profiles");
 
-function fixture({ pending = false, concurrent = false, complete = false } = {}) {
+function fixture({ pending = false, concurrent = false, complete = false, draftComplete = false } = {}) {
   const table = {
     id: "483210623",
     name: "companies",
@@ -17,6 +17,9 @@ function fixture({ pending = false, concurrent = false, complete = false } = {})
   };
   let published = structuredClone(table);
   let draft = structuredClone(table);
+  if (draftComplete) {
+    draft.columns.push(...PROFILE_COLUMNS.map((column, index) => ({ ...column, id: String(index + 3) })));
+  }
   let publishedRows = [{ id: "10", values: { name: "Example organization", website: "https://example.com" } }];
   let draftRows = structuredClone(publishedRows);
   if (pending) draftRows[0].values.name = "Unpublished change";
@@ -31,6 +34,7 @@ function fixture({ pending = false, concurrent = false, complete = false } = {})
     if (method === "PATCH") {
       draft.columns = body.columns.map((column, index) => ({
         id: String(column.id || index + 1), name: column.name, label: column.label, type: column.type,
+        options: column.options, optionCount: column.options.length, updatedAt: "2026-11-14T00:00:00Z",
       }));
       if (concurrent) draftRows[0].values.name = "Concurrent editor change";
       return structuredClone(draft);
@@ -91,6 +95,12 @@ test("stops before publication if an editor changes row data during migration", 
 
 test("rerunning a completed migration is read-only", async () => {
   const state = fixture({ complete: true });
+  await migrate(state.request);
+  assert.ok(state.calls.every((call) => call.method === "GET"));
+});
+
+test("rerunning a draft migration leaves editorial publication to the editor", async () => {
+  const state = fixture({ draftComplete: true, pending: true });
   await migrate(state.request);
   assert.ok(state.calls.every((call) => call.method === "GET"));
 });
