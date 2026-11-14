@@ -36,6 +36,13 @@ jobs:
         if: inputs.publish_llms
         run: node --test scripts/publish_llms.test.js
 
+      - name: Upload llms.txt using CMS deployment credentials
+        if: inputs.publish_llms
+        env:
+          HUBSPOT_ACCOUNT_ID: ${{ vars.hubspot_account_id || secrets.hubspot_portal_id }}
+          HUBSPOT_PERSONAL_ACCESS_KEY: ${{ secrets.hubspot_personal_access_key }}
+        run: npx --yes --package=@hubspot/cli@^7 --call='hs filemanager upload llms.txt true-doors-brand/llms.txt --use-env'
+
       - name: Publish llms.txt and root proxy
         if: inputs.publish_llms
         env:

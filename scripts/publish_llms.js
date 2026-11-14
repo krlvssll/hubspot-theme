@@ -27,11 +27,6 @@ async function publishLlms(request, fetchPublic, content) {
   if (root.status !== 404 && !existing.length) {
     throw new Error(`The llms.txt URL returned ${root.status}, not 404. Review the existing route before replacing it.`);
   }
-  const form = new FormData();
-  form.append("file", new Blob([content], { type: "text/plain;charset=utf-8" }), "llms.txt");
-  form.append("folderPath", "/true-doors-brand");
-  form.append("options", JSON.stringify({ access: "PUBLIC_NOT_INDEXABLE", overwrite: true }));
-  await request("POST", "/files/v3/files", form);
   const hosted = await fetchPublic(destination);
   if (!hosted.ok || !(hosted.headers.get("content-type") || "").startsWith("text/plain") ||
       (await hosted.text()).trim() !== content.trim()) {
@@ -50,26 +45,25 @@ async function publishLlms(request, fetchPublic, content) {
       isOnlyAfterNotFound: true,
     });
   }
-  console.log(`Uploaded and verified ${destination}; root proxy configured for ${SITE}/llms.txt.`);
+  console.log(`Verified ${destination}; root proxy configured for ${SITE}/llms.txt.`);
   console.log("URL redirect propagation may take up to 48 hours. Verify the root response before claiming it is live.");
 }
 
 async function main() {
   const token = process.env.HUBSPOT_PAT;
-  if (!token) throw new Error("Missing HUBSPOT_PAT with files and content permissions.");
+  if (!token) throw new Error("Missing HUBSPOT_PAT with content permissions.");
   const content = await readFile(join(__dirname, "../llms.txt"), "utf8");
   await publishLlms(async (method, path, body) => {
-    const multipart = body instanceof FormData;
     const response = await fetch(`https://api.hubapi.com${path}`, {
       method,
       headers: {
         Authorization: `Bearer ${token}`,
-        ...(multipart ? {} : { "Content-Type": "application/json" }),
+        "Content-Type": "application/json",
       },
-      body: body === undefined ? undefined : multipart ? body : JSON.stringify(body),
+      body: body === undefined ? undefined : JSON.stringify(body),
     });
     if (!response.ok) {
-      throw new Error(`HubSpot ${method} ${path} failed (${response.status}). Verify files and content permissions; existing pages were not changed.`);
+      throw new Error(`HubSpot ${method} ${path} failed (${response.status}). Verify content permissions; existing pages were not changed.`);
     }
     return response.json();
   }, fetch, content);

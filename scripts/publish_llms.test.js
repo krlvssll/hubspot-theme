@@ -17,11 +17,9 @@ function fixture({ redirects = [], rootStatus = 404, hostedType = "text/plain", 
   return { calls, request, fetchPublic };
 }
 
-test("publishes a plain-text file and an exact, 404-only root proxy", async () => {
+test("verifies the uploaded plain-text file before creating an exact, 404-only root proxy", async () => {
   const state = fixture();
   await publishLlms(state.request, state.fetchPublic, "# True Doors\n");
-  const upload = state.calls.find((call) => call.path === "/files/v3/files");
-  assert.equal(await upload.body.get("file").text(), "# True Doors\n");
   const proxy = state.calls.find((call) => call.method === "POST" && call.path.includes("url-redirects"));
   assert.equal(proxy.body.redirectStyle, 305);
   assert.equal(proxy.body.isOnlyAfterNotFound, true);
@@ -49,7 +47,7 @@ test("never proxies an HTML error or mismatched content", async () => {
   }
 });
 
-test("reruns update the file without duplicating its matching proxy", async () => {
+test("reruns verify the file without duplicating its matching proxy", async () => {
   const state = fixture({
     rootStatus: 200,
     redirects: [{
@@ -59,5 +57,5 @@ test("reruns update the file without duplicating its matching proxy", async () =
     }],
   });
   await publishLlms(state.request, state.fetchPublic, "# True Doors\n");
-  assert.equal(state.calls.filter((call) => call.method === "POST").length, 1);
+  assert.equal(state.calls.filter((call) => call.method === "POST").length, 0);
 });

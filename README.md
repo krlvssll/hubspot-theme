@@ -202,8 +202,9 @@ The Community shell advertises it with a `rel="alternate"` head link.
 HubSpot theme uploads cannot create a site-root text endpoint. Run
 **Deploy Brand Redesign Theme to HubSpot** with **publish_llms** enabled to upload the file to
 `/hubfs/true-doors-brand/llms.txt` and configure an exact, 404-only HubSpot
-proxy (305) at `https://www.truedoors.com/llms.txt`. This needs `files` and
-`content` permissions on `hubspot_private_app_token`. The publisher refuses
+proxy (305) at `https://www.truedoors.com/llms.txt`. The upload uses the
+existing CMS personal access key via `hs filemanager upload`; the proxy
+needs `content` permissions on `hubspot_private_app_token`. The publisher refuses
 conflicting routes and verifies the hosted file's text and MIME type before
 creating the proxy. HubSpot says redirect propagation can take up to 48 hours.
 Verify that `/llms.txt` returns the plain text rather than an HTML page.
