@@ -1,0 +1,12 @@
+[
+  {
+    "name": "organization",
+    "label": "Organization",
+    "type": "hubdbrow",
+    "required": false,
+    "table_name_or_id": "483210623",
+    "display_columns": ["name"],
+    "display_format": "%0",
+    "help_text": "Select a published row from the companies HubDB table. Edit profile details in HubDB, then publish the table. No CRM synchronization is configured."
+  }
+]

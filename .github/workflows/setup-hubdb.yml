@@ -1,7 +1,15 @@
 name: Set up HubDB tables
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: "HubDB operation"
+        type: choice
+        default: initial-setup
+        options:
+          - initial-setup
+          - company-profiles
 
 jobs:
   setup-hubdb:
@@ -16,7 +24,18 @@ jobs:
           node-version: "20"
 
       - name: Run HubDB setup script
+        if: inputs.operation != 'company-profiles'
         env:
           HUBSPOT_PAT: ${{ secrets.hubspot_private_app_token }}
           HUBSPOT_PORTAL_ID: ${{ vars.hubspot_account_id || secrets.hubspot_portal_id }}
         run: node scripts/setup_hubdb.js
+
+      - name: Check company profile migration
+        if: inputs.operation == 'company-profiles'
+        run: node --test scripts/update_company_profiles.test.js
+
+      - name: Add company profile columns
+        if: inputs.operation == 'company-profiles'
+        env:
+          HUBSPOT_PAT: ${{ secrets.hubspot_private_app_token }}
+        run: node scripts/update_company_profiles.js

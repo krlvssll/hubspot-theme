@@ -1,0 +1,129 @@
+.organization-profile {
+  color: #243943;
+  font-family: inherit;
+  line-height: 1.65;
+  width: min(100% - 3rem, 1200px);
+  margin: 0 auto clamp(3rem, 6vw, 6rem);
+  overflow-wrap: anywhere;
+}
+
+.organization-profile,
+.organization-profile * {
+  box-sizing: border-box;
+}
+
+.organization-profile__card {
+  background: #eef3f3;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.organization-profile__card--with-image {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.organization-profile__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 22rem;
+  object-fit: cover;
+}
+
+.organization-profile__content {
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+  min-width: 0;
+}
+
+.organization-profile .organization-profile__eyebrow {
+  margin: 0 0 1.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.organization-profile .organization-profile__logo {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(12rem, 100%);
+  max-height: 4.5rem;
+  margin-bottom: 1.5rem;
+  object-fit: contain;
+}
+
+.organization-profile h2 {
+  color: #243943;
+  font-family: inherit;
+  font-size: clamp(1.8rem, 3.2vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  text-transform: none;
+  margin: 0 0 1.25rem;
+}
+
+.organization-profile__description {
+  margin: 0 0 1.5rem;
+  max-width: 60ch;
+  white-space: pre-line;
+}
+
+.organization-profile__details {
+  display: grid;
+  gap: 1rem;
+  margin: 0 0 1.75rem;
+}
+
+.organization-profile__details dt {
+  color: #53656c;
+  font-size: 0.85rem;
+}
+
+.organization-profile__details dd {
+  margin: 0.15rem 0 0;
+}
+
+.organization-profile__address {
+  white-space: pre-line;
+}
+
+.organization-profile .organization-profile__link {
+  color: #3e6970;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  font-weight: 600;
+}
+
+.organization-profile .organization-profile__link:hover {
+  color: #243943;
+}
+
+.organization-profile .organization-profile__link:focus-visible {
+  outline: 3px solid #3e6970;
+  outline-offset: 5px;
+}
+
+.organization-profile--prompt {
+  padding: 2rem;
+  border: 1px dashed #3e6970;
+  background: #eef3f3;
+}
+
+@media (max-width: 767px) {
+  .organization-profile {
+    width: calc(100% - 2rem);
+  }
+
+  .organization-profile__card--with-image {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .organization-profile__photo img {
+    min-height: 0;
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+}

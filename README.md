@@ -136,6 +136,42 @@ is shown only in the HubSpot editor.
 This addition does not deploy itself, create pages, modify the shared HubDB
 tables, or change `true-doors-theme/`.
 
+### About the Organization
+
+The Community story template includes an optional **About the Organization**
+module after the story. Select a company using its **Organization** row picker.
+All profile data comes from the existing `companies` HubDB table `483210623`,
+not CRM Companies; no automatic CRM synchronization is configured.
+
+For an existing page that retained its old drag-and-drop sections, add
+**About the Organization** from the page editor's module list. The separate
+Press template does not include this module by default.
+
+| HubDB column | Type | Card content |
+| --- | --- | --- |
+| `name` | TEXT | Organization name (required to display the card) |
+| `website` | TEXT | Website link (absolute HTTP/HTTPS URL) |
+| `address` | TEXT | Address, with line breaks preserved |
+| `featured_image` | IMAGE | Organization photograph |
+| `featured_image_alt` | TEXT | Accessible photograph description; leave empty only for decorative photos |
+| `logo` | IMAGE | Logo (decorative next to the visible organization name) |
+| `description` | TEXT | Short public description |
+| `company_type` | TEXT | Organization type |
+
+Run **Set up HubDB tables** with operation **company-profiles**, or
+`HUBSPOT_PAT=... node scripts/update_company_profiles.js`, to add and publish
+the missing columns. This additive migration preserves existing column IDs,
+rows and table settings, including private API access. It refuses to publish
+unrelated draft edits and does not populate or invent any company details.
+Avoid editing the table during the migration.
+
+Fill the profile fields in HubDB and **publish the table** before expecting
+them on public pages. Blank optional fields are omitted. Without a selected,
+named row, the module renders nothing publicly and shows a reminder only in
+the editor. Updating a row updates all cards using that organization; use
+only approved public organization information and permissioned photography.
+The migration does not publish or modify any CMS pages.
+
 ## HubDB-backed Projects page
 
 The `true-doors-theme/templates/projects.html` template renders a list of
@@ -146,7 +182,7 @@ sets up three related HubDB tables:
 
 | Table | Purpose | Columns |
 | --- | --- | --- |
-| `companies` | Companies associated with a project | `name` (TEXT), `website` (TEXT) |
+| `companies` | Companies associated with a project or community story | `name` (TEXT), `website` (TEXT); the company-profiles migration adds the optional profile columns above |
 | `products` | Products that can be attached to a project | `name` (TEXT), `sku` (TEXT), `description` (TEXT) |
 | `projects` | The projects shown on the Projects page | `project_name` (TEXT), `location_name` (TEXT), `city` (TEXT), `region` (TEXT), `country` (TEXT), `status` (SELECT: "In Progress" / "Completed"), `start_date` (DATE), `description` (RICHTEXT), `company` (FOREIGN_ID -> `companies`), `products` (FOREIGN_ID -> `products`) |
 

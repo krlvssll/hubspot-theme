@@ -1,6 +1,7 @@
 name: Deploy Brand Redesign Theme to HubSpot
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
