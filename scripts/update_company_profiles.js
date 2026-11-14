@@ -94,6 +94,7 @@ async function migrate(request) {
   const addedNames = columns.filter((column) => !draft.columns.some((old) => old.name === column.name))
     .map((column) => column.name);
   if (!addedNames.length) {
+    console.log(`Verified company profile schema in draft: ${PROFILE_COLUMNS.map((column) => `${column.name} (${column.type})`).join(", ")}.`);
     console.log("All company profile columns are already in draft. Publish the table in HubSpot when its editorial edits are ready.");
     return;
   }
@@ -101,7 +102,7 @@ async function migrate(request) {
     !isDeepStrictEqual(rowSnapshot(publishedRows), rowSnapshot(draftRows));
   const publishedBaseline = rowSnapshot(publishedRows);
   const draftBaseline = rowSnapshot(draftRows);
-  const updated = await request("PATCH", `${base}/draft`, {
+  await request("PATCH", `${base}/draft`, {
     name: draft.name,
     label: draft.label,
     useForPages: draft.useForPages,
@@ -121,21 +122,20 @@ async function migrate(request) {
       maxNumberOfOptions: column.maxNumberOfOptions,
     })),
   });
-  if (updatedColumns(updated).length !== updated.columns.length ||
-      !isDeepStrictEqual(tableSettings(draft), tableSettings({
-        ...updated,
-        columns: updated.columns.filter((column) => !addedNames.includes(column.name)),
-      }))) {
-    throw new Error("Draft schema verification failed. Nothing was published; review the companies table in HubSpot.");
-  }
   const [currentPublished, currentDraft, currentPublishedRows, currentDraftRows] = await Promise.all([
     request("GET", base),
     request("GET", `${base}/draft`),
     allRows(false),
     allRows(true),
   ]);
+  if (updatedColumns(currentDraft).length !== currentDraft.columns.length ||
+      !isDeepStrictEqual(tableSettings(draft), tableSettings({
+        ...currentDraft,
+        columns: currentDraft.columns.filter((column) => !addedNames.includes(column.name)),
+      }))) {
+    throw new Error("Draft schema verification failed. Nothing was published; review the companies table in HubSpot.");
+  }
   if (!isDeepStrictEqual(tableSettings(published), tableSettings(currentPublished)) ||
-      !isDeepStrictEqual(tableSettings(updated), tableSettings(currentDraft)) ||
       !isDeepStrictEqual(publishedBaseline, rowSnapshot(currentPublishedRows)) ||
       !isDeepStrictEqual(draftBaseline, rowSnapshot(currentDraftRows, addedNames))) {
     throw new Error("Companies changed during migration. Added columns remain in draft; nothing was published. Review in HubSpot.");
@@ -149,7 +149,7 @@ async function migrate(request) {
   await request("POST", `${base}/draft/publish`);
   const [verified, verifiedRows] = await Promise.all([request("GET", base), allRows(false)]);
   if (updatedColumns(verified).length !== verified.columns.length ||
-      !isDeepStrictEqual(tableSettings(updated), tableSettings(verified)) ||
+      !isDeepStrictEqual(tableSettings(currentDraft), tableSettings(verified)) ||
       !isDeepStrictEqual(publishedBaseline, rowSnapshot(verifiedRows, addedNames))) {
     throw new Error("Post-publication verification failed. Review the companies table in HubSpot.");
   }
