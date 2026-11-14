@@ -71,10 +71,11 @@ test("publishes additive schema while retaining private access and row values", 
   assert.ok(state.calls.some((call) => call.path.includes("/rows/draft?")));
 });
 
-test("does not publish or modify pre-existing editorial drafts", async () => {
+test("adds columns to draft without publishing or changing existing editorial data", async () => {
   const state = fixture({ pending: true });
-  await assert.rejects(migrate(state.request), /unpublished edits/);
-  assert.ok(state.calls.every((call) => call.method === "GET"));
+  await migrate(state.request);
+  assert.equal(state.calls.filter((call) => call.method === "PATCH").length, 1);
+  assert.ok(!state.calls.some((call) => call.method === "POST"));
 });
 
 test("stops before publication if an editor changes row data during migration", async () => {

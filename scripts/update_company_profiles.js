@@ -85,18 +85,22 @@ async function migrate(request) {
     allRows(false),
     allRows(true),
   ]);
-  const columns = updatedColumns(published);
-  const addedNames = columns.filter((column) => !published.columns.some((old) => old.name === column.name))
-    .map((column) => column.name);
-  if (!addedNames.length) {
+  const publishedColumns = updatedColumns(published);
+  if (publishedColumns.length === published.columns.length) {
     console.log("All company profile columns are already published. No changes made.");
     return;
   }
-  if (!isDeepStrictEqual(tableSettings(published), tableSettings(draft)) ||
-      !isDeepStrictEqual(rowSnapshot(publishedRows), rowSnapshot(draftRows))) {
-    throw new Error("Companies has unpublished edits. Publish or review them in HubSpot before rerunning; no changes made.");
+  const columns = updatedColumns(draft);
+  const addedNames = columns.filter((column) => !draft.columns.some((old) => old.name === column.name))
+    .map((column) => column.name);
+  if (!addedNames.length) {
+    console.log("All company profile columns are already in draft. Publish the table in HubSpot when its editorial edits are ready.");
+    return;
   }
-  const baseline = rowSnapshot(publishedRows);
+  const hasEditorialDraft = !isDeepStrictEqual(tableSettings(published), tableSettings(draft)) ||
+    !isDeepStrictEqual(rowSnapshot(publishedRows), rowSnapshot(draftRows));
+  const publishedBaseline = rowSnapshot(publishedRows);
+  const draftBaseline = rowSnapshot(draftRows);
   const updated = await request("PATCH", `${base}/draft`, { columns });
   const [currentPublished, currentDraft, currentPublishedRows, currentDraftRows] = await Promise.all([
     request("GET", base),
@@ -106,15 +110,21 @@ async function migrate(request) {
   ]);
   if (!isDeepStrictEqual(tableSettings(published), tableSettings(currentPublished)) ||
       !isDeepStrictEqual(tableSettings(updated), tableSettings(currentDraft)) ||
-      !isDeepStrictEqual(baseline, rowSnapshot(currentPublishedRows)) ||
-      !isDeepStrictEqual(baseline, rowSnapshot(currentDraftRows, addedNames))) {
+      !isDeepStrictEqual(publishedBaseline, rowSnapshot(currentPublishedRows)) ||
+      !isDeepStrictEqual(draftBaseline, rowSnapshot(currentDraftRows, addedNames))) {
     throw new Error("Companies changed during migration. Added columns remain in draft; nothing was published. Review in HubSpot.");
+  }
+  if (hasEditorialDraft) {
+    console.log(`Added company profile columns to draft: ${addedNames.join(", ")}.`);
+    console.log("Verified existing published and draft rows are unchanged. Unrelated unpublished edits were preserved, not published.");
+    console.log("Publish the companies table in HubSpot when its editorial edits and profile details are ready.");
+    return;
   }
   await request("POST", `${base}/draft/publish`);
   const [verified, verifiedRows] = await Promise.all([request("GET", base), allRows(false)]);
   if (updatedColumns(verified).length !== verified.columns.length ||
       !isDeepStrictEqual(tableSettings(updated), tableSettings(verified)) ||
-      !isDeepStrictEqual(baseline, rowSnapshot(verifiedRows, addedNames))) {
+      !isDeepStrictEqual(publishedBaseline, rowSnapshot(verifiedRows, addedNames))) {
     throw new Error("Post-publication verification failed. Review the companies table in HubSpot.");
   }
   console.log(`Published company profile columns: ${addedNames.join(", ")}.`);

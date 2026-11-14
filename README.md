@@ -161,8 +161,9 @@ Press template does not include this module by default.
 Run **Set up HubDB tables** with operation **company-profiles**, or
 `HUBSPOT_PAT=... node scripts/update_company_profiles.js`, to add and publish
 the missing columns. This additive migration preserves existing column IDs,
-rows and table settings, including private API access. It refuses to publish
-unrelated draft edits and does not populate or invent any company details.
+rows and table settings, including private API access. If the table already
+has unpublished edits, it adds columns to the draft only, leaving publication
+to the editor. It never publishes unrelated edits or populates company details.
 Avoid editing the table during the migration.
 
 Fill the profile fields in HubDB and **publish the table** before expecting
