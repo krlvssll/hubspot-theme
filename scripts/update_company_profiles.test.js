@@ -29,7 +29,9 @@ function fixture({ pending = false, concurrent = false, complete = false } = {})
     }
     if (method === "GET") return structuredClone(isDraft ? draft : published);
     if (method === "PATCH") {
-      draft.columns = body.columns.map((column, index) => ({ ...column, id: column.id || String(index + 1) }));
+      draft.columns = body.columns.map((column, index) => ({
+        id: String(column.id || index + 1), name: column.name, label: column.label, type: column.type,
+      }));
       if (concurrent) draftRows[0].values.name = "Concurrent editor change";
       return structuredClone(draft);
     }
@@ -65,7 +67,7 @@ test("publishes additive schema while retaining private access and row values", 
   await migrate(state.request);
   const patch = state.calls.find((call) => call.method === "PATCH");
   assert.equal(patch.body.columns.length, 8);
-  assert.equal(patch.body.columns[0].id, "1");
+  assert.equal(patch.body.columns[0].id, 1);
   assert.equal(patch.body.name, "companies");
   assert.equal(patch.body.label, "Companies");
   assert.equal(patch.body.allowPublicApiAccess, false);

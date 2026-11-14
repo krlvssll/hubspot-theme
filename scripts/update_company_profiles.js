@@ -109,7 +109,17 @@ async function migrate(request) {
     allowChildTables: draft.allowChildTables,
     enableChildTablePages: draft.enableChildTablePages,
     dynamicMetaTags: draft.dynamicMetaTags,
-    columns,
+    columns: columns.map((column) => ({
+      id: column.id === undefined ? undefined : Number(column.id),
+      name: column.name,
+      label: column.label,
+      type: column.type,
+      options: column.options || [],
+      foreignTableId: column.foreignTableId,
+      foreignColumnId: column.foreignColumnId,
+      maxNumberOfCharacters: column.maxNumberOfCharacters,
+      maxNumberOfOptions: column.maxNumberOfOptions,
+    })),
   });
   if (updatedColumns(updated).length !== updated.columns.length ||
       !isDeepStrictEqual(tableSettings(draft), tableSettings({
@@ -157,7 +167,8 @@ async function main() {
       body: body === undefined ? undefined : JSON.stringify(body),
     });
     if (!response.ok) {
-      throw new Error(`HubSpot API ${method} ${path} failed (${response.status}). Check the token's hubdb scope and table permissions.`);
+      const text = await response.text();
+      throw new Error(`HubSpot API ${method} ${path} failed (${response.status}): ${text.replaceAll(token, "[redacted]")}`);
     }
     return response.status === 204 ? {} : response.json();
   });
