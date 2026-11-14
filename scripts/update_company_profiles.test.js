@@ -66,7 +66,10 @@ test("publishes additive schema while retaining private access and row values", 
   const patch = state.calls.find((call) => call.method === "PATCH");
   assert.equal(patch.body.columns.length, 8);
   assert.equal(patch.body.columns[0].id, "1");
-  assert.deepEqual(Object.keys(patch.body), ["columns"]);
+  assert.equal(patch.body.name, "companies");
+  assert.equal(patch.body.label, "Companies");
+  assert.equal(patch.body.allowPublicApiAccess, false);
+  assert.equal(patch.body.useForPages, false);
   assert.equal(state.calls.filter((call) => call.method === "POST").length, 1);
   assert.ok(state.calls.some((call) => call.path.includes("/rows/draft?")));
 });

@@ -101,7 +101,23 @@ async function migrate(request) {
     !isDeepStrictEqual(rowSnapshot(publishedRows), rowSnapshot(draftRows));
   const publishedBaseline = rowSnapshot(publishedRows);
   const draftBaseline = rowSnapshot(draftRows);
-  const updated = await request("PATCH", `${base}/draft`, { columns });
+  const updated = await request("PATCH", `${base}/draft`, {
+    name: draft.name,
+    label: draft.label,
+    useForPages: draft.useForPages,
+    allowPublicApiAccess: draft.allowPublicApiAccess,
+    allowChildTables: draft.allowChildTables,
+    enableChildTablePages: draft.enableChildTablePages,
+    dynamicMetaTags: draft.dynamicMetaTags,
+    columns,
+  });
+  if (updatedColumns(updated).length !== updated.columns.length ||
+      !isDeepStrictEqual(tableSettings(draft), tableSettings({
+        ...updated,
+        columns: updated.columns.filter((column) => !addedNames.includes(column.name)),
+      }))) {
+    throw new Error("Draft schema verification failed. Nothing was published; review the companies table in HubSpot.");
+  }
   const [currentPublished, currentDraft, currentPublishedRows, currentDraftRows] = await Promise.all([
     request("GET", base),
     request("GET", `${base}/draft`),
