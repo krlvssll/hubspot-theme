@@ -138,9 +138,10 @@ text when the caption is blank. Related-story images and organization
 photographs also show their alt text. On Community pages, a small scoped
 script supplies captions for images inside rich text and retained standard
 image modules, preserving existing figure captions. Supply meaningful alt
-text for every content photograph; intentionally decorative images with
-empty alt text are not given invented captions. This enhancement does not
-run on Press pages.
+text for every content photograph. Missing descriptions show the explicit
+caption "Image description not provided." rather than inventing one; this
+does not change the image's alt attribute. This enhancement does not run on
+Press pages.
 
 The **Community topics** section sits at the bottom of the template,
 including on existing pages that retained their drag-and-drop content.

@@ -20,7 +20,7 @@
     {% if module.hero.image.src %}
       <figure class="community-story__hero">
         <img src="{{ module.hero.image.src|escape_url }}" alt="{{ module.hero.image.alt|escape_attr }}" width="{{ module.hero.image.width|escape_attr }}" height="{{ module.hero.image.height|escape_attr }}" fetchpriority="high">
-        {% set hero_caption = module.hero.caption|trim or module.hero.image.alt|trim %}
+        {% set hero_caption = module.hero.caption|trim or module.hero.image.alt|trim or "Image description not provided." %}
         {% if hero_caption %}<figcaption>{{ hero_caption|escape_html }}</figcaption>{% endif %}
       </figure>
     {% elif is_in_editor %}
@@ -42,7 +42,7 @@
         {% if chapter.image.src %}
           <figure class="community-story__chapter-photo">
             <img src="{{ chapter.image.src|escape_url }}" alt="{{ chapter.image.alt|escape_attr }}" width="{{ chapter.image.width|escape_attr }}" height="{{ chapter.image.height|escape_attr }}" loading="lazy">
-            {% set chapter_caption = chapter.caption|trim or chapter.image.alt|trim %}
+            {% set chapter_caption = chapter.caption|trim or chapter.image.alt|trim or "Image description not provided." %}
             {% if chapter_caption %}<figcaption>{{ chapter_caption|escape_html }}</figcaption>{% endif %}
           </figure>
         {% endif %}
@@ -66,7 +66,7 @@
             {% if story.image.src %}
               <figure>
                 <img src="{{ story.image.src|escape_url }}" alt="{{ story.image.alt|escape_attr }}" width="{{ story.image.width|escape_attr }}" height="{{ story.image.height|escape_attr }}" loading="lazy">
-                {% if story.image.alt|trim %}<figcaption>{{ story.image.alt|escape_html }}</figcaption>{% endif %}
+                <figcaption>{{ (story.image.alt|trim or "Image description not provided.")|escape_html }}</figcaption>
               </figure>
             {% endif %}
             {% if story.category %}<p class="community-story__eyebrow">{{ story.category|escape_html }}</p>{% endif %}

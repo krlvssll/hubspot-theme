@@ -1,4 +1,4 @@
-{% set topics = module.topics|selectattr("label")|list %}
+{% set topics = module.topics|selectattr("title")|list %}
 {% if topics %}
   <section class="community-topics" aria-labelledby="community-topics-{{ name|escape_attr }}">
     <h2 id="community-topics-{{ name|escape_attr }}">{{ module.heading|escape_html }}</h2>
@@ -6,9 +6,9 @@
       {% for topic in topics %}
         <li>
           {% if topic.url %}
-            <a href="{{ topic.url|escape_url }}">{{ topic.label|escape_html }} <span aria-hidden="true">&#8594;</span></a>
+            <a href="{{ topic.url|escape_url }}">{{ topic.title|escape_html }} <span aria-hidden="true">&#8594;</span></a>
           {% else %}
-            <span class="community-topics__label">{{ topic.label|escape_html }}</span>
+            <span class="community-topics__label">{{ topic.title|escape_html }}</span>
           {% endif %}
         </li>
       {% endfor %}

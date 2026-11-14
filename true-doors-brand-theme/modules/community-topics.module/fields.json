@@ -9,9 +9,9 @@
     "name": "topics",
     "label": "Topics",
     "type": "group",
-    "occurrence": {"min": 0, "max": 12, "default": 0, "sorting_label_field": "topics.label"},
+    "occurrence": {"min": 0, "max": 12, "default": 0, "sorting_label_field": "topics.title"},
     "children": [
-      {"name": "label", "label": "Topic", "type": "text", "required": true},
+      {"name": "title", "label": "Topic", "type": "text"},
       {"name": "url", "label": "Topic page URL (optional)", "type": "url", "help_text": "Link to an existing topic or collection page. Leave blank for a text label."}
     ]
   }

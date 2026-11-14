@@ -1,11 +1,10 @@
 (function () {
   function addImageCaptions(root, generated) {
     root.querySelectorAll("img").forEach(function (image) {
-      var alt = (image.getAttribute("alt") || "").trim();
+      var alt = (image.getAttribute("alt") || "").trim() || "Image description not provided.";
       var caption = generated.get(image);
       if (caption && root.contains(caption)) {
         if (caption.textContent !== alt) caption.textContent = alt;
-        caption.hidden = !alt;
         return;
       }
       var figure = image.closest("figure");
@@ -15,7 +14,7 @@
       if (anchor && root.contains(anchor) && anchor.querySelectorAll("img").length === 1) {
         target = anchor;
       }
-      if (!alt || (existing && existing.textContent.trim())) return;
+      if (existing && existing.textContent.trim()) return;
       if (figure && figure.querySelectorAll("img").length === 1) {
         caption = existing || document.createElement("figcaption");
         caption.textContent = alt;
