@@ -5,6 +5,10 @@
 -->
 {% extends "./layouts/base.html" %}
 
+{% block extra_head %}
+  <link rel="alternate" type="text/plain" href="https://www.truedoors.com/llms.txt" title="True Doors information for language models">
+{% endblock extra_head %}
+
 {% block header %}
   {{ require_css(get_asset_url("../css/templates/community-story.css")) }}
   <header class="story-site-header">
@@ -31,6 +35,7 @@
 {% endblock footer %}
 
 {% block body %}
+  {{ require_js(get_asset_url("../js/community-story.js"), "footer") }}
   {% dnd_area "community_story"
     label="Community story",
     class="body-container body-container--community-story"
@@ -50,4 +55,5 @@
       {% end_dnd_module %}
     {% end_dnd_section %}
   {% end_dnd_area %}
+  {% module "community_topics" path="../modules/community-topics", label="Community topics" %}
 {% endblock body %}

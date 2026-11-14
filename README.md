@@ -133,6 +133,21 @@ boilerplate or generated imagery is presented as community photography.
 Missing photos are omitted on published pages; the opening-photo reminder
 is shown only in the HubSpot editor.
 
+Opening and chapter photographs display their custom caption, or their alt
+text when the caption is blank. Related-story images and organization
+photographs also show their alt text. On Community pages, a small scoped
+script supplies captions for images inside rich text and retained standard
+image modules, preserving existing figure captions. Supply meaningful alt
+text for every content photograph; intentionally decorative images with
+empty alt text are not given invented captions. This enhancement does not
+run on Press pages.
+
+The **Community topics** section sits at the bottom of the template,
+including on existing pages that retained their drag-and-drop content.
+Edit it to add topic labels and optional links to existing topic pages.
+It is not a new taxonomy or an automatic filter; unlinked labels remain
+plain text and the section stays hidden publicly until topics are entered.
+
 This addition does not deploy itself, create pages, modify the shared HubDB
 tables, or change `true-doors-theme/`.
 
@@ -154,7 +169,7 @@ Press template does not include this module by default.
 | `address` | TEXT | Address, with line breaks preserved |
 | `featured_image` | IMAGE | Organization photograph |
 | `featured_image_alt` | TEXT | Accessible photograph description; leave empty only for decorative photos |
-| `logo` | IMAGE | Logo (decorative next to the visible organization name) |
+| `logo` | IMAGE | Logo, with an organization-name caption |
 | `description` | TEXT | Short public description |
 | `company_type` | TEXT | Organization type |
 
@@ -172,6 +187,26 @@ named row, the module renders nothing publicly and shows a reminder only in
 the editor. Updating a row updates all cards using that organization; use
 only approved public organization information and permissioned photography.
 The migration does not publish or modify any CMS pages.
+Organization website links open in a new tab with `noopener noreferrer`
+and an accessible announcement.
+
+### LLM discovery
+
+[`llms.txt`](./llms.txt) is a curated, plain-text Markdown guide to published
+True Doors content, including Community stories. It excludes preview URLs
+and private or unpublished data. Update its links when public content moves;
+it is not generated from individual drafts and does not guarantee indexing.
+The Community shell advertises it with a `rel="alternate"` head link.
+
+HubSpot theme uploads cannot create a site-root text endpoint. Run
+**Deploy Brand Redesign Theme to HubSpot** with **publish_llms** enabled to upload the file to
+`/hubfs/true-doors-brand/llms.txt` and configure an exact, 404-only HubSpot
+proxy (305) at `https://www.truedoors.com/llms.txt`. This needs `files` and
+`content` permissions on `hubspot_private_app_token`. The publisher refuses
+conflicting routes and verifies the hosted file's text and MIME type before
+creating the proxy. HubSpot says redirect propagation can take up to 48 hours.
+Verify that `/llms.txt` returns the plain text rather than an HTML page.
+No robots.txt rules, page indexing settings, or existing CMS pages are changed.
 
 ## HubDB-backed Projects page
 

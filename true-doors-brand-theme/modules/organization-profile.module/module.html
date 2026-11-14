@@ -5,14 +5,18 @@
   <aside class="organization-profile" aria-labelledby="organization-profile-heading-{{ name|escape_attr }}">
     <div class="organization-profile__card{% if organization.featured_image.url %} organization-profile__card--with-image{% endif %}">
       {% if organization.featured_image.url %}
-        <div class="organization-profile__photo">
+        <figure class="organization-profile__photo">
           <img src="{{ organization.featured_image.url|escape_url }}" alt="{{ organization.featured_image_alt|default('', true)|escape_attr }}" loading="lazy"{% if organization.featured_image.width and organization.featured_image.height %} width="{{ organization.featured_image.width|escape_attr }}" height="{{ organization.featured_image.height|escape_attr }}"{% endif %}>
-        </div>
+          {% if organization.featured_image_alt|trim %}<figcaption>{{ organization.featured_image_alt|escape_html }}</figcaption>{% endif %}
+        </figure>
       {% endif %}
       <div class="organization-profile__content">
         <p class="organization-profile__eyebrow">About the Organization</p>
         {% if organization.logo.url %}
-          <img class="organization-profile__logo" src="{{ organization.logo.url|escape_url }}" alt="" loading="lazy"{% if organization.logo.width and organization.logo.height %} width="{{ organization.logo.width|escape_attr }}" height="{{ organization.logo.height|escape_attr }}"{% endif %}>
+          <figure class="organization-profile__logo-figure">
+            <img class="organization-profile__logo" src="{{ organization.logo.url|escape_url }}" alt="{{ organization.name|escape_attr }} logo" loading="lazy"{% if organization.logo.width and organization.logo.height %} width="{{ organization.logo.width|escape_attr }}" height="{{ organization.logo.height|escape_attr }}"{% endif %}>
+            <figcaption>{{ organization.name|escape_html }} logo</figcaption>
+          </figure>
         {% endif %}
         <h2 id="organization-profile-heading-{{ name|escape_attr }}">{{ organization.name|escape_html }}</h2>
         {% if organization.description %}
@@ -30,7 +34,7 @@
         {% endif %}
         {% set website = organization.website|trim %}
         {% if website is string_startingwith "https://" or website is string_startingwith "http://" %}
-          <a class="organization-profile__link" href="{{ website|escape_url }}">Visit organization website <span aria-hidden="true">&#8599;</span></a>
+          <a class="organization-profile__link" href="{{ website|escape_url }}" target="_blank" rel="noopener noreferrer">Visit organization website <span aria-hidden="true">&#8599;</span><span class="organization-profile__sr-only"> (opens in a new tab)</span></a>
         {% endif %}
       </div>
     </div>

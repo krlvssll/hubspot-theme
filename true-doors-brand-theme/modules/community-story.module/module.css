@@ -248,6 +248,9 @@
 .community-story__card img {
   aspect-ratio: 4 / 3;
   object-fit: cover;
+}
+
+.community-story__card figure {
   margin-bottom: 1.5rem;
 }
 

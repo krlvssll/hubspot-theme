@@ -1,0 +1,19 @@
+{% set topics = module.topics|selectattr("label")|list %}
+{% if topics %}
+  <section class="community-topics" aria-labelledby="community-topics-{{ name|escape_attr }}">
+    <h2 id="community-topics-{{ name|escape_attr }}">{{ module.heading|escape_html }}</h2>
+    <ul class="community-topics__list">
+      {% for topic in topics %}
+        <li>
+          {% if topic.url %}
+            <a href="{{ topic.url|escape_url }}">{{ topic.label|escape_html }} <span aria-hidden="true">&#8594;</span></a>
+          {% else %}
+            <span class="community-topics__label">{{ topic.label|escape_html }}</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+{% elif is_in_editor %}
+  <div class="community-topics community-topics--prompt">Add topics for this story. Optionally link each topic to an existing collection page.</div>
+{% endif %}

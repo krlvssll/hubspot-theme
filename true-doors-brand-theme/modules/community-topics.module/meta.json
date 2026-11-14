@@ -1,0 +1,8 @@
+{
+  "label": "Community topics",
+  "global": false,
+  "host_template_types": ["PAGE"],
+  "is_available_for_new_content": true,
+  "icon": "../../images/module-icons/blog.svg",
+  "categories": ["body_content"]
+}

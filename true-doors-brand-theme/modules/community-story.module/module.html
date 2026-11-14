@@ -20,7 +20,8 @@
     {% if module.hero.image.src %}
       <figure class="community-story__hero">
         <img src="{{ module.hero.image.src|escape_url }}" alt="{{ module.hero.image.alt|escape_attr }}" width="{{ module.hero.image.width|escape_attr }}" height="{{ module.hero.image.height|escape_attr }}" fetchpriority="high">
-        {% if module.hero.caption %}<figcaption>{{ module.hero.caption|escape_html }}</figcaption>{% endif %}
+        {% set hero_caption = module.hero.caption|trim or module.hero.image.alt|trim %}
+        {% if hero_caption %}<figcaption>{{ hero_caption|escape_html }}</figcaption>{% endif %}
       </figure>
     {% elif is_in_editor %}
       <div class="community-story__photo-prompt">Add a consented community photograph to complete the story opening.</div>
@@ -41,7 +42,8 @@
         {% if chapter.image.src %}
           <figure class="community-story__chapter-photo">
             <img src="{{ chapter.image.src|escape_url }}" alt="{{ chapter.image.alt|escape_attr }}" width="{{ chapter.image.width|escape_attr }}" height="{{ chapter.image.height|escape_attr }}" loading="lazy">
-            {% if chapter.caption %}<figcaption>{{ chapter.caption|escape_html }}</figcaption>{% endif %}
+            {% set chapter_caption = chapter.caption|trim or chapter.image.alt|trim %}
+            {% if chapter_caption %}<figcaption>{{ chapter_caption|escape_html }}</figcaption>{% endif %}
           </figure>
         {% endif %}
         {% if chapter.quote %}
@@ -62,7 +64,10 @@
         {% for story in related_stories %}
           <a class="community-story__card" href="{{ story.url|escape_url }}">
             {% if story.image.src %}
-              <img src="{{ story.image.src|escape_url }}" alt="{{ story.image.alt|escape_attr }}" width="{{ story.image.width|escape_attr }}" height="{{ story.image.height|escape_attr }}" loading="lazy">
+              <figure>
+                <img src="{{ story.image.src|escape_url }}" alt="{{ story.image.alt|escape_attr }}" width="{{ story.image.width|escape_attr }}" height="{{ story.image.height|escape_attr }}" loading="lazy">
+                {% if story.image.alt|trim %}<figcaption>{{ story.image.alt|escape_html }}</figcaption>{% endif %}
+              </figure>
             {% endif %}
             {% if story.category %}<p class="community-story__eyebrow">{{ story.category|escape_html }}</p>{% endif %}
             <h3>{{ story.title|escape_html }} <span aria-hidden="true">&#8599;</span></h3>

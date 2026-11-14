@@ -8,7 +8,7 @@
       {"name": "title", "label": "Story title", "type": "text", "default": "A familiar door. A personal place."},
       {"name": "standfirst", "label": "Short introduction", "type": "text", "default": "Every community has a story. Share how people, familiar places and personal choices shaped yours."},
       {"name": "image", "label": "Opening photograph", "type": "image", "responsive": true, "resizable": false, "show_loading": false},
-      {"name": "caption", "label": "Photo caption and credit", "type": "text"},
+      {"name": "caption", "label": "Photo caption and credit", "type": "text", "help_text": "Optional override. When blank, the image alt text is shown as its caption."},
       {"name": "community", "label": "Community name", "type": "text"},
       {"name": "location", "label": "Location", "type": "text"},
       {"name": "published", "label": "Publication date", "type": "date"},
@@ -38,7 +38,7 @@
         "default": "image_right"
       },
       {"name": "image", "label": "Chapter photograph", "type": "image", "responsive": true, "resizable": false, "show_loading": false},
-      {"name": "caption", "label": "Photo caption and credit", "type": "text"},
+      {"name": "caption", "label": "Photo caption and credit", "type": "text", "help_text": "Optional override. When blank, the image alt text is shown as its caption."},
       {"name": "quote", "label": "Optional first-hand quote", "type": "text"},
       {"name": "attribution", "label": "Quote attribution (with permission)", "type": "text"}
     ],

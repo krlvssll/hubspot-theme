@@ -143,6 +143,20 @@
   text-decoration: underline;
 }
 
+.body-container--community-story .story-image-caption {
+  display: block;
+  color: #53656c;
+  font: 400 0.85rem/1.5 Arial, Helvetica, sans-serif;
+  text-align: left;
+  margin: 0.75rem 0 1.5rem;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.body-container--community-story .story-image-caption[hidden] {
+  display: none;
+}
+
 @media (max-width: 767px) {
   .story-site-header__inner,
   .story-site-footer {

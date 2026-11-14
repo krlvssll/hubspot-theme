@@ -2,6 +2,11 @@ name: Deploy Brand Redesign Theme to HubSpot
 
 on:
   workflow_dispatch:
+    inputs:
+      publish_llms:
+        description: "Also publish llms.txt and its site-root proxy"
+        type: boolean
+        default: false
   push:
     branches:
       - main
@@ -20,3 +25,19 @@ jobs:
           dest_dir: true-doors-brand-theme
           account_id: ${{ vars.hubspot_account_id || secrets.hubspot_portal_id }}
           personal_access_key: ${{ secrets.hubspot_personal_access_key }}
+
+      - name: Set up Node.js for LLM discovery publishing
+        if: inputs.publish_llms
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check discovery publisher
+        if: inputs.publish_llms
+        run: node --test scripts/publish_llms.test.js
+
+      - name: Publish llms.txt and root proxy
+        if: inputs.publish_llms
+        env:
+          HUBSPOT_PAT: ${{ secrets.hubspot_private_app_token }}
+        run: node scripts/publish_llms.js
